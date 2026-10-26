@@ -23,7 +23,7 @@
 <aside class="side"><div class="eyebrow">ORGANIZATION MAP / 01</div><h2>組織總覽</h2><p>點選 3D 島嶼，管理單位成員、工作事件與協作事項。這是一個可自行編輯的前端原型。</p><div class="stats"><div class="stat"><strong id="unitCount">7</strong><small>組織單位</small></div><div class="stat"><strong id="peopleCount">0</strong><small>登錄人員</small></div><div class="stat"><strong id="eventCount">0</strong><small>工作事件</small></div></div>
 <div class="section-label">選擇組織單位</div><div class="mobile-tabs" id="mobileTabs"></div><div class="island-list" id="islandList"></div>
 <div class="section-label">目前選取</div><div id="unitDetails"></div>
-<div class="section-label">新增人員</div><form id="personForm"><div class="field"><label for="personName">姓名</label><input id="personName" placeholder="例如：王小明" required maxlength="40"></div><div class="field"><label for="personRole">職稱／負責工作</label><input id="personRole" placeholder="例如：資深網路工程師" maxlength="60"></div><div class="field"><label for="personDesc">人員詳細說明</label><textarea id="personDesc" placeholder="專長、負責區域、聯絡方式或工作備註…" maxlength="500"></textarea></div><div class="form-actions"><button type="submit">＋ 加入島嶼並加入 3D 場景</button></div></form>
+<div class="section-label">新增人員</div><form id="personForm"><div class="field"><label for="personName">姓名</label><input id="personName" placeholder="例如：王小明" required maxlength="40"></div><div class="field"><label for="personRole">職稱／負責工作</label><input id="personRole" placeholder="例如：網路工程師、裝機維運、行政支援（可留白）" maxlength="60"></div><div class="field"><label for="personDesc">人員詳細說明</label><textarea id="personDesc" placeholder="專長、負責工作、支援範圍、聯絡方式或備註…（點擊 3D 人員可查看）" maxlength="500"></textarea></div><div class="form-actions"><button type="submit">＋ 加入島嶼並加入 3D 場景</button></div></form>
 <div class="section-label">新增工作事件</div><form id="eventForm"><div class="field"><label for="eventTitle">事件／工作名稱</label><input id="eventTitle" placeholder="例如：PBX 設備汰換規劃" required maxlength="80"></div><div class="field"><label for="eventDate">預定日期</label><input id="eventDate" type="date"></div><div class="field"><label for="eventStatus">狀態</label><select id="eventStatus"><option>待處理</option><option>進行中</option><option>已完成</option><option>待協調</option></select></div><div class="field"><label for="eventNote">備註</label><textarea id="eventNote" placeholder="工作內容、協作單位或進度…" maxlength="300"></textarea></div><div class="form-actions"><button type="submit">＋ 建立事件</button></div></form>
 <div class="section-label">島上人員</div><div id="peopleList"></div><div class="section-label">工作事件</div><div id="eventsList"></div><div class="footer-note">資料目前儲存在這個瀏覽器（localStorage）。此展示版尚未連接公司帳號、伺服器或權限系統；匯出 JSON 可用來備份或交由工程師串接後端。</div></aside>
 </div>
@@ -47,16 +47,39 @@ const water=new THREE.Mesh(new THREE.PlaneGeometry(200,200),new THREE.MeshStanda
 const islandGroup=new THREE.Group();scene.add(islandGroup);const islandMeshes=[];const positions=[[-6,0,-3.7],[0,0,-5.4],[6,0,-3.7],[-7,0,2.8],[0,0,3.4],[7,0,2.8],[0,0,0]];
 function makeTree(x,z,s=1){const g=new THREE.Group();const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.07*s,.1*s,.45*s,5),new THREE.MeshStandardMaterial({color:0x9a7552}));trunk.position.y=.22*s;g.add(trunk);for(let i=0;i<3;i++){const cone=new THREE.Mesh(new THREE.ConeGeometry((.34-i*.07)*s,.55*s,6),new THREE.MeshStandardMaterial({color:[0x67ad83,0x80c18b,0x4f9978][i]}));cone.position.y=(.48+i*.22)*s;g.add(cone)}g.position.set(x,0,z);return g}
 function makeBuilding(x,z,color){const g=new THREE.Group();const base=new THREE.Mesh(new THREE.BoxGeometry(.72,.62,.66),new THREE.MeshStandardMaterial({color:0xfff6e4,roughness:.9}));base.position.y=.38;base.castShadow=true;g.add(base);const roof=new THREE.Mesh(new THREE.ConeGeometry(.58,.4,4),new THREE.MeshStandardMaterial({color,roughness:.85}));roof.rotation.y=Math.PI/4;roof.position.y=.88;roof.castShadow=true;g.add(roof);for(let i=0;i<2;i++){const win=new THREE.Mesh(new THREE.BoxGeometry(.13,.16,.02),new THREE.MeshStandardMaterial({color:0x83c6d0,emissive:0x244c53,emissiveIntensity:.15}));win.position.set(i? .19:-.19,.4,.341);g.add(win)}return g}
+function makeIslandTheme(index,color){
+  // 每座島加入符合業務名稱的辨識物件，維持輕量低多邊形風格。
+  const g=new THREE.Group(); const metal=new THREE.MeshStandardMaterial({color:0x718c98,roughness:.75});
+  const dark=new THREE.MeshStandardMaterial({color:0x355b6b,roughness:.72});
+  const light=new THREE.MeshStandardMaterial({color:0xdce9e7,roughness:.8});
+  const accent=new THREE.MeshStandardMaterial({color,roughness:.7});
+  function box(x,y,z,sx,sy,sz,mat){const m=new THREE.Mesh(new THREE.BoxGeometry(sx,sy,sz),mat);m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;g.add(m);return m}
+  function pole(x,z,h=1.2){const m=new THREE.Mesh(new THREE.CylinderGeometry(.035,.055,h,7),metal);m.position.set(x,h/2+.25,z);m.castShadow=true;g.add(m);return m}
+  function rack(x,z){box(x,.55,z,.38,.62,.36,dark);for(let j=0;j<3;j++){box(x,.34+j*.2,z+.19,.25,.035,.015,accent);box(x+.1,.34+j*.2,z+.205,.035,.035,.018,light)}}
+  if(index===0||index===3||index===6){ // PBX / IP Centrex：電話與交換設備
+    box(.95,.36,.65,.5,.28,.32,light);box(.95,.52,.65,.36,.05,.23,accent);
+    for(let i=0;i<3;i++)box(.82+i*.12,.58,.65,.045,.035,.035,dark);
+    if(index===3||index===6){rack(1.15,-.45);pole(-1.25,.65,.85);const dish=new THREE.Mesh(new THREE.SphereGeometry(.28,12,8,0,Math.PI,0,Math.PI),light);dish.position.set(-1.25,1.05,.65);dish.rotation.z=-.45;g.add(dish)}
+  } else if(index===1||index===4){ // IMO / OA：伺服器、文件與辦公系統
+    rack(.95,.58);rack(1.35,.58);box(-1.05,.42,.6,.48,.12,.34,accent);box(-1.05,.52,.6,.38,.04,.25,light);
+    for(let i=0;i<3;i++)box(-1.18+i*.13,.57,.6,.06,.025,.06,dark);
+  } else if(index===2||index===5){ // 網電工程：通訊塔、天線與工程工具
+    pole(1.05,.55,1.55);for(let j=0;j<3;j++){const cross=box(1.05,.75+j*.34,.55,.72,.045,.045,accent);cross.rotation.z=(j%2?-.12:.12)}
+    const dish=new THREE.Mesh(new THREE.SphereGeometry(.26,12,8,0,Math.PI,0,Math.PI),light);dish.position.set(-1.12,.85,.55);dish.rotation.z=-.55;g.add(dish);
+    box(-1.1,.38,-.55,.42,.3,.3,accent);box(-1.1,.56,-.55,.3,.08,.22,metal);
+  }
+  return g;
+}
 function labelSprite(text){const c=document.createElement('canvas');c.width=512;c.height=100;const ctx=c.getContext('2d');ctx.fillStyle='rgba(255,253,246,.95)';ctx.beginPath();ctx.roundRect(4,4,504,92,26);ctx.fill();ctx.strokeStyle='rgba(65,125,133,.22)';ctx.lineWidth=3;ctx.stroke();ctx.fillStyle='#234b5c';ctx.font='bold 29px system-ui,"Noto Sans TC",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text,256,51);const tex=new THREE.CanvasTexture(c);tex.colorSpace=THREE.SRGBColorSpace;const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthTest:false}));sp.scale.set(3.45,.68,1);sp.position.y=2.35;return sp}
 units.forEach((u,i)=>{const [x,_,z]=positions[i],g=new THREE.Group();g.position.set(x,0,z);g.userData.unitId=u.id;const shape=new THREE.CylinderGeometry(2.05,2.25,.65,7,1);shape.rotateY(Math.PI/7);const rock=new THREE.Mesh(shape,new THREE.MeshStandardMaterial({color:0xb9d9be,roughness:1}));rock.position.y=-.15;rock.castShadow=true;rock.receiveShadow=true;g.add(rock);const topGeo=new THREE.CylinderGeometry(1.98,2.05,.18,7,1);topGeo.rotateY(Math.PI/7);const top=new THREE.Mesh(topGeo,new THREE.MeshStandardMaterial({color:u.color,roughness:.88}));top.position.y=.22;top.receiveShadow=true;g.add(top);
-const building=makeBuilding(-.25,.05,u.color);building.position.y=.28;g.add(building);g.add(makeTree(-1.15,-.25,.85),makeTree(.95,.35,.78),makeTree(.8,-.8,.6));const badge=new THREE.Mesh(new THREE.CylinderGeometry(.28,.28,.12,24),new THREE.MeshStandardMaterial({color:0xffffff}));badge.position.set(0,1.27,0);g.add(badge);const orb=new THREE.Mesh(new THREE.SphereGeometry(.17,16,12),new THREE.MeshStandardMaterial({color:0x4b9f9c,emissive:0x245c58,emissiveIntensity:.4}));orb.position.set(0,1.46,0);g.add(orb);g.add(labelSprite(u.short));islandGroup.add(g);islandMeshes.push({mesh:g,unit:u,orb,top});});
+const building=makeBuilding(-.25,.05,u.color);building.position.y=.28;g.add(building);const theme=makeIslandTheme(i,u.color);theme.position.y=.22;g.add(theme);g.add(makeTree(-1.15,-.25,.85),makeTree(.95,.35,.78),makeTree(.8,-.8,.6));const badge=new THREE.Mesh(new THREE.CylinderGeometry(.28,.28,.12,24),new THREE.MeshStandardMaterial({color:0xffffff}));badge.position.set(0,1.27,0);g.add(badge);const orb=new THREE.Mesh(new THREE.SphereGeometry(.17,16,12),new THREE.MeshStandardMaterial({color:0x4b9f9c,emissive:0x245c58,emissiveIntensity:.4}));orb.position.set(0,1.46,0);g.add(orb);g.add(labelSprite(u.short));islandGroup.add(g);islandMeshes.push({mesh:g,unit:u,orb,top});});
 // Bridges visually connect the island network.
 const bridgeLinks=[[0,1],[1,2],[0,3],[2,5],[3,4],[4,5],[1,6],[3,6],[4,6],[5,6]];
 function bridge(a,b){const p1=new THREE.Vector3(...positions[a]);const p2=new THREE.Vector3(...positions[b]);const d=p2.clone().sub(p1);const span=Math.max(1,d.length()-4.05);const mesh=new THREE.Mesh(new THREE.BoxGeometry(.24,.12,span),new THREE.MeshStandardMaterial({color:0xe8c99a,roughness:.9}));mesh.position.copy(p1.clone().add(p2).multiplyScalar(.5));mesh.rotation.y=Math.atan2(d.x,d.z);mesh.position.y=.34;mesh.castShadow=true;islandGroup.add(mesh);
 // 護欄讓橋梁在俯視角也清楚可見
 for(const side of [-1,1]){const rail=new THREE.Mesh(new THREE.BoxGeometry(.055,.18,span),new THREE.MeshStandardMaterial({color:0xb98e5a,roughness:.85}));rail.position.copy(mesh.position);rail.position.y=.48;rail.position.x+=Math.cos(Math.atan2(d.x,d.z))*side*.13;rail.rotation.y=mesh.rotation.y;islandGroup.add(rail)}}bridgeLinks.forEach(p=>bridge(...p));
-// === 自動行走的小人：科長、各股股長、資深工程師 ===
-// 角色以簡單低多邊形模型製作，沿著各島的環形路線持續巡走。
+// === 預設只顯示科長；其他同仁由使用者新增 ===
+// 角色以簡單低多邊形模型製作，沿島嶼或橋梁路線巡走。
 function tinyRoleLabel(text){
   const c=document.createElement('canvas'); c.width=320; c.height=64;
   const ctx=c.getContext('2d'); ctx.fillStyle='rgba(255,253,246,.96)';
@@ -89,19 +112,8 @@ function makeWalker(role,color){
 }
 const walkers=[];
 const walkerSpecs=[
-  {island:6,role:'科長',color:0x2f7181,phase:0.2,r:1.05,speed:.42},
-  {island:0,role:'一股股長',color:0xe58d70,phase:1.1,r:1.12,speed:.55},
-  {island:1,role:'二股股長',color:0x5599c4,phase:2.3,r:1.10,speed:.48},
-  {island:2,role:'三股股長',color:0x5b9b70,phase:3.2,r:1.12,speed:.52},
-  {island:3,role:'四股股長',color:0xb68d35,phase:4.2,r:1.12,speed:.47},
-  {island:4,role:'五股股長',color:0x8d78bf,phase:5.1,r:1.1,speed:.50},
-  {island:5,role:'六股股長',color:0xc66e8b,phase:0.8,r:1.1,speed:.49},
-  {island:6,role:'七股股長',color:0x398f88,phase:2.7,r:1.35,speed:.45},
-  {island:0,role:'資深工程師',color:0x5d8192,phase:3.5,r:1.48,speed:.62},
-  {island:2,role:'資深工程師',color:0x5d8192,phase:0.4,r:1.48,speed:.58},
-  {island:4,role:'資深工程師',color:0x5d8192,phase:2.1,r:1.45,speed:.61},
-  {island:5,role:'資深工程師',color:0x5d8192,phase:4.7,r:1.45,speed:.57}
-];
+  {island:6,role:'科長',color:0x2f7181,phase:0.2,r:1.05,speed:.42}
+]
 walkerSpecs.forEach((spec,i)=>{
   const [cx,,cz]=positions[spec.island]; const model=makeWalker(spec.role,spec.color); model.userData.person={name:spec.role,role:spec.role,description:'組織群島中的巡查角色。可依單位工作安排巡查、協作與事件處理。',unitId:units[spec.island].id}; model.userData.unitId=units[spec.island].id;
   model.position.set(cx+Math.cos(spec.phase)*spec.r,.34,cz+Math.sin(spec.phase)*spec.r);
@@ -110,13 +122,13 @@ walkerSpecs.forEach((spec,i)=>{
   walkers.push({...spec,model,cx,cz,baseY:.34,offset:i*.7,taskSprite,route:null,routeIndex:0,routeProgress:0,task:null,homeIsland:spec.island});
 });
 
-// 島嶼路網：小人會沿橋梁跨單位巡查；新增事件時，資深工程師會前往指定單位建築。
+// 島嶼路網：新增人員可沿橋梁巡走；新增事件時，若有工程師會派往指定單位。
 const adjacency=Array.from({length:units.length},()=>[]);bridgeLinks.forEach(([a,b])=>{adjacency[a].push(b);adjacency[b].push(a)});
 function islandPoint(i){const [x,,z]=positions[i];return new THREE.Vector3(x,.34,z)}
 function shortestPath(from,to){const q=[from],prev=Array(units.length).fill(-1);prev[from]=from;while(q.length){const n=q.shift();if(n===to)break;for(const k of adjacency[n])if(prev[k]===-1){prev[k]=n;q.push(k)}}if(prev[to]===-1)return [from,to];const path=[];for(let n=to;n!==from;n=prev[n])path.unshift(n);path.unshift(from);return path}
 function setRoute(w,points,task=null){w.route=points.map(p=>p.clone());w.routeIndex=0;w.routeProgress=0;w.task=task;if(task){w.taskSprite.visible=true;setSpriteText(w.taskSprite,task.title)}else{w.taskSprite.visible=false} }
 function setSpriteText(sprite,text){const old=sprite.material.map;const c=document.createElement('canvas');c.width=640;c.height=110;const ctx=c.getContext('2d');ctx.fillStyle='rgba(255,253,246,.97)';ctx.beginPath();ctx.roundRect(3,3,634,104,24);ctx.fill();ctx.strokeStyle='rgba(51,102,112,.35)';ctx.lineWidth=3;ctx.stroke();ctx.fillStyle='#234b5c';ctx.font='bold 30px system-ui,"Noto Sans TC",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(String(text||'工作中').slice(0,28),320,55);const tex=new THREE.CanvasTexture(c);tex.colorSpace=THREE.SRGBColorSpace;sprite.material.map=tex;sprite.material.needsUpdate=true;if(old)old.dispose()}
-function dispatchEngineer(unitIndex,event){const candidates=walkers.filter(w=>w.role==='資深工程師');if(!candidates.length)return;const engineer=candidates.reduce((best,w)=>{const a=shortestPath(w.homeIsland,unitIndex).length,b=shortestPath(best.homeIsland,unitIndex).length;return a<b?w:best},candidates[0]);const current=engineer.model.position;let nearest=0,bestDist=Infinity;positions.forEach((p,i)=>{const d=current.distanceTo(new THREE.Vector3(p[0],.34,p[2]));if(d<bestDist){bestDist=d;nearest=i}});const islands=shortestPath(nearest,unitIndex);const pts=[current.clone(),...islands.map(islandPoint).slice(1)];const [x,,z]=positions[unitIndex];pts.push(new THREE.Vector3(x-.95,.34,z+.05));setRoute(engineer,pts,{title:'處理：'+event.title,unitIndex,eventId:event.createdAt});showToast(engineer.role+' 正前往 '+units[unitIndex].short+' 處理工作');}
+function dispatchEngineer(unitIndex,event){const candidates=walkers.filter(w=>(w.person?.role||w.role||'').includes('工程師'));if(!candidates.length){showToast('事件已建立；目前沒有工程師人員可自動派工');return;}const engineer=candidates.reduce((best,w)=>{const a=shortestPath(w.homeIsland,unitIndex).length,b=shortestPath(best.homeIsland,unitIndex).length;return a<b?w:best},candidates[0]);const current=engineer.model.position;let nearest=0,bestDist=Infinity;positions.forEach((p,i)=>{const d=current.distanceTo(new THREE.Vector3(p[0],.34,p[2]));if(d<bestDist){bestDist=d;nearest=i}});const islands=shortestPath(nearest,unitIndex);const pts=[current.clone(),...islands.map(islandPoint).slice(1)];const [x,,z]=positions[unitIndex];pts.push(new THREE.Vector3(x-.95,.34,z+.05));setRoute(engineer,pts,{title:'處理：'+event.title,unitIndex,eventId:event.createdAt});showToast(engineer.role+' 正前往 '+units[unitIndex].short+' 處理工作');}
 function startPatrol(w){const current=w.model.position.clone();const nearest=w.homeIsland;const neighbors=adjacency[nearest];const target=neighbors[(Math.floor(w.offset*10)+Math.floor(performance.now()/9000))%neighbors.length] ?? nearest;const outward=shortestPath(nearest,target).map(islandPoint);const back=shortestPath(target,nearest).slice(1).map(islandPoint);const points=[current];if(current.distanceTo(outward[0])>.15)points.push(outward[0]);points.push(...outward.slice(1),...back);setRoute(w,points);}
 
 function addPersonWalker(unitIndex, person){
