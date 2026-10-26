@@ -1,0 +1,460 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>資訊通科群島｜3D 組織探索</title>
+<style>
+:root{color-scheme:dark;--bg:#081b2b;--panel:#102b40;--line:#285067;--text:#e7f6f5;--muted:#a1c1ca;--green:#69d5a1;--gold:#ffd27b}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,"Microsoft JhengHei",sans-serif}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.app{display:grid;grid-template-columns:minmax(0,1fr) 355px;height:100dvh;min-height:600px}
+.stage{position:relative;min-width:0;overflow:hidden;background:radial-gradient(ellipse at 50% 40%,#173c55,#081b2b 75%)}
+#world{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+.topbar{position:absolute;top:18px;left:20px;right:20px;display:flex;justify-content:space-between;gap:12px;align-items:flex-start;pointer-events:none}
+.brand,.view-actions{pointer-events:auto}
+.eyebrow{font-size:10px;letter-spacing:.2em;color:var(--green);font-weight:800}
+h1{font-size:clamp(22px,3vw,35px);margin:6px 0}
+.subtitle{font-size:12px;color:var(--muted)}
+.view-actions{display:flex;gap:7px;flex-wrap:wrap}
+.btn{border:1px solid #3b6576;border-radius:10px;padding:9px 12px;background:#123248;color:var(--text)}
+.btn:hover{background:#1b455d}
+.btn.primary{background:#267e68;border-color:#48ad89;color:white}
+.btn.warn{color:#ffc4b4}
+.hint{position:absolute;bottom:17px;left:20px;right:20px;font-size:12px;color:#c1dce2;display:flex;justify-content:space-between;gap:10px;pointer-events:none}
+.hint span{background:#071b2ac9;border:1px solid #23495d;padding:8px 11px;border-radius:10px}
+.side{background:#0d2537;border-left:1px solid #214257;overflow:auto;min-width:0}
+.sidehead{padding:21px 18px 16px;border-bottom:1px solid #24465a}
+.sidehead .eyebrow{margin-bottom:7px}
+.sidehead h2{font-size:20px;margin:0 0 5px}
+.sidehead p{font-size:12px;line-height:1.65;color:var(--muted);margin:0}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px}
+.stat{background:#122f43;border:1px solid #21485b;border-radius:12px;padding:10px}
+.stat span{display:block;font-size:10px;color:var(--muted)}
+.stat strong{display:block;font-size:23px;margin-top:3px}
+.tabs{display:flex;gap:5px;padding:0 12px;border-bottom:1px solid #24465a}
+.tab{flex:1;border:0;border-radius:9px 9px 0 0;padding:11px 3px;background:transparent;color:var(--muted);font-size:12px}
+.tab.active{background:#194b52;color:#aaf3d0}
+.content{padding:14px 13px 26px}
+.toolbar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}
+.toolbar h3{font-size:14px;margin:0}
+.pill{border-radius:30px;background:#174c45;color:#a8f2d1;padding:4px 8px;font-size:10px}
+.field{margin-bottom:10px}
+label{display:block;font-size:11px;color:#a8c9d0;margin-bottom:5px}
+input,select,textarea{width:100%;min-width:0;border:1px solid #315467;background:#091e2d;color:var(--text);border-radius:9px;padding:10px}
+textarea{resize:vertical;min-height:65px}
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.item{border:1px solid #254a5e;background:#102c40;border-radius:12px;padding:12px;margin-bottom:9px}
+.itemtitle{font-size:13px;font-weight:800;overflow-wrap:anywhere}
+.itemmeta{font-size:11px;color:var(--muted);line-height:1.7;margin-top:5px;overflow-wrap:anywhere}
+.itemnote{font-size:12px;color:#c5dce0;margin-top:8px;white-space:pre-wrap;overflow-wrap:anywhere}
+.itembuttons{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.mini{border:1px solid #315568;background:#16384b;color:#d8eeee;border-radius:8px;padding:6px 9px;font-size:11px}
+.mini.delete{color:#ffc1b0}
+.chip{display:inline-block;font-size:10px;border-radius:20px;padding:4px 7px;background:#254a5f;color:#c6e7ed}
+.chip.todo{background:#5a4423;color:#ffdc98}
+.chip.doing{background:#19455f;color:#9bdbff}
+.chip.done{background:#174c3b;color:#a6f0c2}
+.empty{border:1px dashed #315568;padding:22px 12px;border-radius:12px;text-align:center;color:var(--muted);font-size:12px;line-height:1.7}
+.unitlist{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:0 12px 14px}
+.unitjump{border:1px solid #254a5e;border-radius:9px;background:#102c40;color:#d7edf0;text-align:left;padding:9px;font-size:11px}
+.unitjump.active{border-color:#65d6a4;background:#17443e}
+.unitjump b{display:block;font-size:12px;margin-bottom:4px}
+.toast{position:absolute;top:90px;left:50%;transform:translateX(-50%);padding:9px 13px;background:#17483f;border:1px solid #4ba984;border-radius:10px;font-size:12px;display:none;z-index:5}
+@media(max-width:850px){
+ .app{height:auto;min-height:100dvh;grid-template-columns:1fr;grid-template-rows:minmax(490px,62dvh) auto}
+ .side{border-left:0;border-top:1px solid #214257;overflow:visible}
+ .stage{min-height:490px}
+ .topbar{left:13px;right:13px;top:13px}
+ .hint{left:12px;right:12px;bottom:12px}
+ .hint span:last-child{display:none}
+ .view-actions .btn{font-size:11px;padding:8px}
+}
+@media(max-width:440px){.subtitle{max-width:220px}.view-actions{max-width:115px}.view-actions .btn{padding:7px;font-size:10px}.formgrid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <section class="stage">
+    <canvas id="world" aria-label="可旋轉的3D組織群島"></canvas>
+    <div class="topbar">
+      <div class="brand">
+        <div class="eyebrow">CHT · TAIPEI OPERATIONS</div>
+        <h1>資訊通科群島</h1>
+        <div class="subtitle">探索組織 · 連結夥伴 · 推進任務</div>
+      </div>
+      <div class="view-actions">
+        <button class="btn" id="resetView">重設視角</button>
+        <button class="btn" id="export">匯出資料</button>
+      </div>
+    </div>
+    <div class="toast" id="toast"></div>
+    <div class="hint">
+      <span>🖱️ 拖曳旋轉 · 滾輪縮放 · 點擊島嶼</span>
+      <span>7 ISLANDS · ONE TEAM</span>
+    </div>
+  </section>
+
+  <aside class="side">
+    <div class="sidehead">
+      <div class="eyebrow">ISLAND CONTROL</div>
+      <h2 id="unitTitle">一股｜PBX・IP Centrex</h2>
+      <p id="unitDesc">規劃設計及工程協調管理</p>
+    </div>
+    <div class="stats">
+      <div class="stat"><span>人員</span><strong id="peopleCount">0</strong></div>
+      <div class="stat"><span>進行中</span><strong id="doingCount">0</strong></div>
+      <div class="stat"><span>待處理</span><strong id="todoCount">0</strong></div>
+    </div>
+    <div class="unitlist" id="unitlist"></div>
+    <div class="tabs">
+      <button class="tab active" data-tab="people">👥 人員</button>
+      <button class="tab" data-tab="events">📌 工作事件</button>
+      <button class="tab" data-tab="duties">📖 職掌</button>
+    </div>
+    <div class="content" id="content"></div>
+  </aside>
+</div>
+
+<script type="module">
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js";
+import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/controls/OrbitControls.js";
+
+const $ = id => document.getElementById(id);
+const units = [
+ {id:"u1",no:"一股",short:"PBX・IP Centrex",desc:"規劃設計及工程協調管理",color:0x68c992,icon:"☎",duty:"辦理 PBX、IP Centrex 產品管理、技術諮詢、專案規劃及工程協調；支援客戶需求調查、現場勘查與服務需求書製作。"},
+ {id:"u2",no:"二股",short:"IMO・OA",desc:"規劃設計、工程協調及維運",color:0xf0c76d,icon:"▣",duty:"辦理 IMO、OA 相關規劃、技術服務、專案協調及設備維運等事項。"},
+ {id:"u3",no:"三股",short:"網管工程",desc:"規劃設計及工程協調管理",color:0x79b9e4,icon:"⌁",duty:"辦理網管工程規劃設計、技術諮詢、專案協調、需求調查及工程管理。"},
+ {id:"u4",no:"四股",short:"裝機・維運",desc:"PBX／IP Centrex 裝機及維運",color:0xf09578,icon:"⚒",duty:"辦理 PBX／IP Centrex 產品與專案所需軟硬體設備供裝、管理及維運。"},
+ {id:"u5",no:"五股",short:"IMO・OA 維運",desc:"規劃設計、裝機及維運",color:0xb2a0e5,icon:"◇",duty:"辦理 IMO、OA 規劃設計、裝機維運、設備管理與工程協調。"},
+ {id:"u6",no:"六股",short:"弱電工程",desc:"裝機、維運及管理",color:0xe6a5bb,icon:"ϟ",duty:"辦理弱電工程設備供裝、管理、維運及相關技術支援。"},
+ {id:"u7",no:"七股",short:"PBX 維運",desc:"PBX／IP Centrex 裝機及維運",color:0x78c9c0,icon:"⌘",duty:"辦理 PBX／IP PBX 設備供裝、管理、維運、週邊系統整合與定期維修。"}
+];
+
+const starter = {
+ people:[],
+ events:[
+  {id:crypto.randomUUID(),unitId:"u1",title:"PBX／IP Centrex 工作盤點",owner:"",due:"",priority:"一般",status:"待處理",note:"示範事件，可修改或刪除。"},
+  {id:crypto.randomUUID(),unitId:"u4",title:"裝機維運進度追蹤",owner:"",due:"",priority:"一般",status:"進行中",note:"示範事件，可修改或刪除。"}
+ ]
+};
+let data;
+try {
+ const saved=localStorage.getItem("cht-islands-3d-v1");
+ data=saved?JSON.parse(saved):starter;
+ if(!Array.isArray(data.people)||!Array.isArray(data.events))data=starter;
+} catch { data=starter; }
+let selected="u1", tab="people", editing=null;
+
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0x0a2031);
+scene.fog=new THREE.Fog(0x0a2031,23,43);
+
+const camera=new THREE.PerspectiveCamera(43,1,.1,100);
+camera.position.set(11,12,17);
+
+const renderer=new THREE.WebGLRenderer({canvas:$("world"),antialias:true,alpha:false});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.shadowMap.enabled=true;
+renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+renderer.outputColorSpace=THREE.SRGBColorSpace;
+renderer.toneMapping=THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure=1.2;
+
+const controls=new OrbitControls(camera,renderer.domElement);
+controls.enableDamping=true;
+controls.dampingFactor=.06;
+controls.target.set(0,1,0);
+controls.minDistance=8;
+controls.maxDistance=28;
+controls.maxPolarAngle=Math.PI*.48;
+
+scene.add(new THREE.HemisphereLight(0xc6efff,0x24424a,2.1));
+const sun=new THREE.DirectionalLight(0xffedc9,3.1);
+sun.position.set(-8,15,9);
+sun.castShadow=true;
+sun.shadow.mapSize.set(2048,2048);
+scene.add(sun);
+
+const sea=new THREE.Mesh(
+ new THREE.PlaneGeometry(200,200,1,1),
+ new THREE.MeshStandardMaterial({color:0x123e59,roughness:.38,metalness:.25})
+);
+sea.rotation.x=-Math.PI/2;
+sea.position.y=-1.4;
+scene.add(sea);
+
+const grid=new THREE.GridHelper(60,50,0x245a6a,0x153a4b);
+grid.position.y=-1.38;
+grid.material.transparent=true;
+grid.material.opacity=.18;
+scene.add(grid);
+
+// 星點
+const starsGeo=new THREE.BufferGeometry(),starPositions=[];
+for(let i=0;i<260;i++){
+ starPositions.push((Math.random()-.5)*55,Math.random()*20-1,(Math.random()-.5)*55);
+}
+starsGeo.setAttribute("position",new THREE.Float32BufferAttribute(starPositions,3));
+scene.add(new THREE.Points(starsGeo,new THREE.PointsMaterial({color:0x9edbd8,size:.055,transparent:true,opacity:.65})));
+
+const islandGroups=new Map(),pickables=[];
+const islandPositions=[
+ [-4.8,0,-4.0],[-1.6,0,-5.4],[2.1,0,-4.9],[5.0,0,-2.3],
+ [-4.8,0,.8],[-1.5,0,2.2],[2.3,0,2.3]
+];
+
+function mat(color,roughness=.85){return new THREE.MeshStandardMaterial({color,roughness})}
+function addMesh(group,geometry,material,x,y,z,shadow=true){
+ const m=new THREE.Mesh(geometry,material);
+ m.position.set(x,y,z);m.castShadow=shadow;m.receiveShadow=true;group.add(m);return m;
+}
+function makeLabel(u){
+ const c=document.createElement("canvas");c.width=512;c.height=128;
+ const ctx=c.getContext("2d");
+ ctx.fillStyle="rgba(7,28,43,.88)";
+ ctx.beginPath();ctx.roundRect(12,12,488,104,24);ctx.fill();
+ ctx.strokeStyle="#8ce4c0";ctx.lineWidth=3;ctx.stroke();
+ ctx.fillStyle="#f4fffb";ctx.textAlign="center";
+ ctx.font="bold 42px sans-serif";ctx.fillText(u.no+" · "+u.short,256,60);
+ ctx.fillStyle="#a9d6d9";ctx.font="24px sans-serif";ctx.fillText("資訊通科群島",256,94);
+ const tex=new THREE.CanvasTexture(c);tex.colorSpace=THREE.SRGBColorSpace;
+ const sprite=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthTest:false}));
+ sprite.scale.set(3.3,.83,1);sprite.position.y=2.65;
+ return sprite;
+}
+function makeTree(group,x,z,s=1){
+ const trunk=addMesh(group,new THREE.CylinderGeometry(.055,.075,.32,6),mat(0x8b6340),x,.45*s,z);
+ trunk.scale.setScalar(s);
+ const crown=addMesh(group,new THREE.ConeGeometry(.3*s,.72*s,7),mat(0x267b57),x,.92*s,z);
+ const crown2=addMesh(group,new THREE.ConeGeometry(.23*s,.55*s,7),mat(0x42a66e),x,1.2*s,z);
+}
+function makeBuilding(group,x,z,h=.7,color=0xe9e3cf){
+ addMesh(group,new THREE.BoxGeometry(.52,h,.48),mat(color),x,.12+h/2,z);
+ const roof=addMesh(group,new THREE.ConeGeometry(.42,.32,4),mat(0xd98567),x,.12+h+.15,z);
+ roof.rotation.y=Math.PI/4;
+ for(let y=.25;y<h;y+=.22){
+  addMesh(group,new THREE.BoxGeometry(.09,.09,.025),mat(0x5fa7bb),x-.12,.12+y,z+.247,false);
+  addMesh(group,new THREE.BoxGeometry(.09,.09,.025),mat(0x5fa7bb),x+.12,.12+y,z+.247,false);
+ }
+}
+function buildIsland(u,index){
+ const g=new THREE.Group();
+ const [x,y,z]=islandPositions[index];g.position.set(x,y,z);
+ // 浮島岩層
+ const rock=addMesh(g,new THREE.CylinderGeometry(1.72,1.25,.72,7,1),mat(0x6a8a79),0,-.18,0);
+ rock.rotation.y=.22;
+ const rock2=addMesh(g,new THREE.CylinderGeometry(1.25,.5,.66,7,1),mat(0x496c68),.02,-.83,.02);
+ rock2.rotation.y=.45;
+ // 草地
+ const grass=addMesh(g,new THREE.CylinderGeometry(1.72,1.62,.22,7),mat(u.color),0,.24,0);
+ grass.rotation.y=.22;
+ // 土地上細節
+ for(let i=0;i<8;i++){
+  const a=i*Math.PI*2/8+.18,r=.95+Math.random()*.3;
+  makeTree(g,Math.cos(a)*r,Math.sin(a)*r,.65+Math.random()*.45);
+ }
+ makeBuilding(g,-.35,-.05,.95,0xf0e6ca);
+ makeBuilding(g,.4,.05,.68,0xd9e7e0);
+ makeBuilding(g,.12,-.55,.48,0xf0d6a6);
+ // 小路
+ const path=addMesh(g,new THREE.BoxGeometry(.18,.025,1.1),mat(0xe9d9ad),.1,.37,.6,false);
+ path.rotation.y=-.28;
+ // 人員小旗
+ const pole=addMesh(g,new THREE.CylinderGeometry(.025,.025,.72,6),mat(0xeaf6ed),0,1.05,.85,false);
+ addMesh(g,new THREE.SphereGeometry(.14,10,8),mat(0xffd17d),0,1.4,.85,false);
+ const label=makeLabel(u);g.add(label);
+ // 點選用透明熱區
+ const hit=new THREE.Mesh(new THREE.CylinderGeometry(1.85,1.85,3.5,8),new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}));
+ hit.position.y=.25;hit.userData.unitId=u.id;g.add(hit);pickables.push(hit);
+ g.userData={unitId:u.id,grass,rock,label,flag:pole};
+ scene.add(g);islandGroups.set(u.id,g);
+}
+units.forEach(buildIsland);
+
+// 裝飾漂浮碎石
+for(let i=0;i<28;i++){
+ const a=Math.random()*Math.PI*2,r=7+Math.random()*5;
+ const m=new THREE.Mesh(new THREE.DodecahedronGeometry(.12+Math.random()*.22,0),mat(i%2?0x477b82:0x2c596b));
+ m.position.set(Math.cos(a)*r,-.4+Math.random()*2,Math.sin(a)*r);
+ m.rotation.set(Math.random()*2,Math.random()*2,Math.random()*2);scene.add(m);
+}
+
+const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();
+let pointerDown=null;
+renderer.domElement.addEventListener("pointerdown",e=>{pointerDown={x:e.clientX,y:e.clientY}});
+renderer.domElement.addEventListener("pointerup",e=>{
+ if(!pointerDown||Math.hypot(e.clientX-pointerDown.x,e.clientY-pointerDown.y)>5)return;
+ const r=renderer.domElement.getBoundingClientRect();
+ pointer.x=((e.clientX-r.left)/r.width)*2-1;
+ pointer.y=-((e.clientY-r.top)/r.height)*2+1;
+ raycaster.setFromCamera(pointer,camera);
+ const hit=raycaster.intersectObjects(pickables,false)[0];
+ if(hit){selected=hit.object.userData.unitId;render();highlight();toast("已選擇 "+getUnit(selected).no);}
+});
+function highlight(){
+ for(const u of units){
+  const g=islandGroups.get(u.id);
+  g.scale.setScalar(u.id===selected?1.08:1);
+  g.userData.grass.material.emissive=new THREE.Color(u.id===selected?0x16492d:0x000000);
+  g.userData.grass.material.emissiveIntensity=u.id===selected?.45:0;
+ }
+}
+function getUnit(id){return units.find(u=>u.id===id)||units[0]}
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function persist(){localStorage.setItem("cht-islands-3d-v1",JSON.stringify(data));render()}
+function toast(msg){const el=$("toast");el.textContent=msg;el.style.display="block";clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.style.display="none",2200)}
+function render(){
+ const u=getUnit(selected);
+ $("unitTitle").textContent=u.no+"｜"+u.short;
+ $("unitDesc").textContent=u.desc;
+ $("peopleCount").textContent=data.people.length;
+ $("doingCount").textContent=data.events.filter(e=>e.status==="進行中").length;
+ $("todoCount").textContent=data.events.filter(e=>e.status==="待處理").length;
+ $("unitlist").innerHTML=units.map(x=>`
+  <button class="unitjump ${x.id===selected?"active":""}" data-unit="${x.id}">
+   <b>${x.icon} ${x.no}</b>${esc(x.short)}
+  </button>`).join("");
+ $("unitlist").querySelectorAll("[data-unit]").forEach(b=>b.onclick=()=>{
+  selected=b.dataset.unit;render();highlight();
+ });
+ document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.tab===tab));
+ if(tab==="people")renderPeople();
+ if(tab==="events")renderEvents();
+ if(tab==="duties")renderDuty();
+ highlight();
+}
+function renderPeople(){
+ const list=data.people.filter(p=>p.unitId===selected);
+ $("content").innerHTML=`
+  <div class="toolbar"><h3>👥 單位人員</h3><span class="pill">${list.length} 位</span></div>
+  <form id="personForm">
+   <div class="field"><label>姓名 *</label><input name="name" required maxlength="60" placeholder="輸入姓名"></div>
+   <div class="formgrid">
+    <div class="field"><label>職稱</label><input name="role" placeholder="例如：工程師"></div>
+    <div class="field"><label>負責業務</label><input name="work" placeholder="業務內容"></div>
+   </div>
+   <div class="field"><label>備註</label><textarea name="note" placeholder="補充工作資訊"></textarea></div>
+   <button class="btn primary" style="width:100%">＋ 新增人員</button>
+  </form>
+  <div style="height:14px"></div>
+  <div id="peopleList"></div>`;
+ $("personForm").onsubmit=e=>{
+  e.preventDefault();const f=new FormData(e.target);
+  data.people.push({id:crypto.randomUUID(),unitId:selected,name:f.get("name"),role:f.get("role"),work:f.get("work"),note:f.get("note")});
+  persist();toast("人員已新增");
+ };
+ $("peopleList").innerHTML=list.length?list.map(p=>`
+  <article class="item">
+   <div class="itemtitle">👤 ${esc(p.name)}</div>
+   <div class="itemmeta">${esc(p.role||"未設定職稱")}<br>${esc(p.work||"尚未填寫負責業務")}</div>
+   ${p.note?`<div class="itemnote">${esc(p.note)}</div>`:""}
+   <div class="itembuttons"><button class="mini" data-edit-person="${p.id}">編輯</button><button class="mini delete" data-del-person="${p.id}">刪除</button></div>
+  </article>`).join(""):`<div class="empty">這座島還沒有登錄人員。<br>可以先新增一位夥伴。</div>`;
+ $("peopleList").querySelectorAll("[data-del-person]").forEach(b=>b.onclick=()=>{
+  if(confirm("確定刪除這位人員？")){data.people=data.people.filter(p=>p.id!==b.dataset.delPerson);persist()}
+ });
+ $("peopleList").querySelectorAll("[data-edit-person]").forEach(b=>b.onclick=()=>{
+  const p=data.people.find(p=>p.id===b.dataset.editPerson);if(!p)return;
+  const name=prompt("姓名",p.name);if(name===null)return;
+  const role=prompt("職稱",p.role||"");if(role===null)return;
+  const work=prompt("負責業務",p.work||"");if(work===null)return;
+  p.name=name.trim()||p.name;p.role=role;p.work=work;persist();
+ });
+}
+function renderEvents(){
+ const list=data.events.filter(e=>e.unitId===selected);
+ $("content").innerHTML=`
+  <div class="toolbar"><h3>📌 工作事件</h3><span class="pill">${list.length} 件</span></div>
+  <form id="eventForm">
+   <div class="field"><label>事件／工作名稱 *</label><input name="title" required maxlength="100" placeholder="例如：設備建置"></div>
+   <div class="formgrid">
+    <div class="field"><label>負責人</label><input name="owner" placeholder="負責人姓名"></div>
+    <div class="field"><label>期限</label><input name="due" type="date"></div>
+   </div>
+   <div class="formgrid">
+    <div class="field"><label>優先級</label><select name="priority"><option>一般</option><option>高</option><option>低</option></select></div>
+    <div class="field"><label>狀態</label><select name="status"><option>待處理</option><option>進行中</option><option>已完成</option></select></div>
+   </div>
+   <div class="field"><label>說明／工作紀錄</label><textarea name="note" placeholder="進度、備註或下一步"></textarea></div>
+   <button class="btn primary" style="width:100%">＋ 建立工作事件</button>
+  </form>
+  <div style="height:14px"></div><div id="eventList"></div>`;
+ $("eventForm").onsubmit=e=>{
+  e.preventDefault();const f=new FormData(e.target);
+  data.events.push({id:crypto.randomUUID(),unitId:selected,title:f.get("title"),owner:f.get("owner"),due:f.get("due"),priority:f.get("priority"),status:f.get("status"),note:f.get("note")});
+  persist();toast("工作事件已建立");
+ };
+ $("eventList").innerHTML=list.length?list.map(e=>`
+  <article class="item">
+   <div class="itemtitle">📌 ${esc(e.title)}</div>
+   <div class="itemmeta">負責人：${esc(e.owner||"尚未指派")}<br>期限：${esc(e.due||"未設定")}<br>優先級：${esc(e.priority)}</div>
+   <div style="margin-top:8px"><span class="chip ${e.status==="待處理"?"todo":e.status==="進行中"?"doing":"done"}">${esc(e.status)}</span></div>
+   ${e.note?`<div class="itemnote">${esc(e.note)}</div>`:""}
+   <div class="itembuttons"><button class="mini" data-cycle="${e.id}">更新狀態</button><button class="mini" data-edit-event="${e.id}">編輯</button><button class="mini delete" data-del-event="${e.id}">刪除</button></div>
+  </article>`).join(""):`<div class="empty">這座島目前沒有工作事件。<br>建立第一項任務開始追蹤進度。</div>`;
+ $("eventList").querySelectorAll("[data-cycle]").forEach(b=>b.onclick=()=>{
+  const e=data.events.find(e=>e.id===b.dataset.cycle);
+  e.status=({"待處理":"進行中","進行中":"已完成","已完成":"待處理"})[e.status];persist();
+ });
+ $("eventList").querySelectorAll("[data-del-event]").forEach(b=>b.onclick=()=>{
+  if(confirm("確定刪除此工作事件？")){data.events=data.events.filter(e=>e.id!==b.dataset.delEvent);persist()}
+ });
+ $("eventList").querySelectorAll("[data-edit-event]").forEach(b=>b.onclick=()=>{
+  const e=data.events.find(e=>e.id===b.dataset.editEvent);if(!e)return;
+  const title=prompt("工作名稱",e.title);if(title===null)return;
+  const owner=prompt("負責人",e.owner||"");if(owner===null)return;
+  const note=prompt("工作紀錄",e.note||"");if(note===null)return;
+  e.title=title.trim()||e.title;e.owner=owner;e.note=note;persist();
+ });
+}
+function renderDuty(){
+ const u=getUnit(selected);
+ $("content").innerHTML=`
+  <div class="toolbar"><h3>📖 單位職掌</h3><span class="pill">${u.no}</span></div>
+  <div class="field"><label>單位名稱</label><input id="dutyShort" value="${esc(u.short)}"></div>
+  <div class="field"><label>職掌摘要</label><textarea id="dutyText" style="min-height:150px">${esc(u.duty)}</textarea></div>
+  <button class="btn primary" id="saveDuty" style="width:100%">儲存職掌</button>
+  <p class="itemmeta">此為示範摘要，正式使用前請由各單位確認職掌內容。</p>`;
+ $("saveDuty").onclick=()=>{
+  u.short=$("dutyShort").value.trim()||u.short;
+  u.duty=$("dutyText").value;persist();toast("職掌已儲存");
+ };
+}
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{tab=b.dataset.tab;render()});
+$("resetView").onclick=()=>{
+ camera.position.set(11,12,17);controls.target.set(0,1,0);controls.update();
+};
+$("export").onclick=()=>{
+ const blob=new Blob([JSON.stringify({units,people:data.people,events:data.events},null,2)],{type:"application/json"});
+ const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="資訊通科群島資料.json";a.click();URL.revokeObjectURL(a.href);
+ toast("已匯出 JSON 備份");
+};
+
+function resize(){
+ const r=$("world").getBoundingClientRect();
+ if(!r.width||!r.height)return;
+ renderer.setSize(r.width,r.height,false);
+ camera.aspect=r.width/r.height;camera.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe($("world"));
+window.addEventListener("resize",resize);resize();
+
+const clock=new THREE.Clock();
+function animate(){
+ requestAnimationFrame(animate);
+ const t=clock.getElapsedTime();
+ for(const [id,g] of islandGroups){
+  g.position.y=Math.sin(t*.8+units.findIndex(u=>u.id===id)*.7)*.075;
+  g.rotation.y=Math.sin(t*.25+units.findIndex(u=>u.id===id))*.025;
+ }
+ controls.update();renderer.render(scene,camera);
+}
+render();animate();
+</script>
+</body>
+</html>
