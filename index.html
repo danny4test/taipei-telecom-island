@@ -49,6 +49,43 @@ const water=new THREE.Mesh(new THREE.PlaneGeometry(200,200),new THREE.MeshStanda
 const islandGroup=new THREE.Group();scene.add(islandGroup);const islandMeshes=[];const positions=[[-6,0,-3.7],[0,0,-5.4],[6,0,-3.7],[-7,0,2.8],[0,0,3.4],[7,0,2.8],[0,0,0]];
 function makeTree(x,z,s=1){const g=new THREE.Group();const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.07*s,.1*s,.45*s,5),new THREE.MeshStandardMaterial({color:0x9a7552}));trunk.position.y=.22*s;g.add(trunk);for(let i=0;i<3;i++){const cone=new THREE.Mesh(new THREE.ConeGeometry((.34-i*.07)*s,.55*s,6),new THREE.MeshStandardMaterial({color:[0x67ad83,0x80c18b,0x4f9978][i]}));cone.position.y=(.48+i*.22)*s;g.add(cone)}g.position.set(x,0,z);return g}
 function makeBuilding(x,z,color){const g=new THREE.Group();const base=new THREE.Mesh(new THREE.BoxGeometry(.72,.62,.66),new THREE.MeshStandardMaterial({color:0xfff6e4,roughness:.9}));base.position.y=.38;base.castShadow=true;g.add(base);const roof=new THREE.Mesh(new THREE.ConeGeometry(.58,.4,4),new THREE.MeshStandardMaterial({color,roughness:.85}));roof.rotation.y=Math.PI/4;roof.position.y=.88;roof.castShadow=true;g.add(roof);for(let i=0;i<2;i++){const win=new THREE.Mesh(new THREE.BoxGeometry(.13,.16,.02),new THREE.MeshStandardMaterial({color:0x83c6d0,emissive:0x244c53,emissiveIntensity:.15}));win.position.set(i? .19:-.19,.4,.341);g.add(win)}return g}
+function makeDepartmentBuilding(index,color){
+  // 依各股的業務屬性，打造不同主建築，而非所有島共用同一棟小屋。
+  const g=new THREE.Group();
+  const wall=new THREE.MeshStandardMaterial({color:0xf4f1e5,roughness:.88});
+  const concrete=new THREE.MeshStandardMaterial({color:0xc7d4d3,roughness:.95});
+  const glass=new THREE.MeshStandardMaterial({color:0x5f9fb1,metalness:.18,roughness:.28,emissive:0x173945,emissiveIntensity:.12});
+  const roof=new THREE.MeshStandardMaterial({color,roughness:.82});
+  const dark=new THREE.MeshStandardMaterial({color:0x355b6b,roughness:.75});
+  function box(x,y,z,sx,sy,sz,mat){const m=new THREE.Mesh(new THREE.BoxGeometry(sx,sy,sz),mat);m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;g.add(m);return m}
+  if(index===0||index===3||index===6){
+    // PBX／IP Centrex：電信交換機房，搭配通風百葉、設備門與通訊天線。
+    box(0,.52,0,1.22,.86,1.02,wall);box(0,1.0,0,1.3,.12,1.1,roof);
+    for(let i=0;i<4;i++)box(-.43+i*.28,.55,.516,.16,.34,.025,glass);
+    box(.22,.36,-.526,.32,.42,.025,dark);box(.22,.39,-.548,.22,.27,.012,concrete);
+    for(let i=0;i<3;i++)box(-.34+i*.28,.32,-.535,.17,.035,.018,roof);
+    const mast=new THREE.Mesh(new THREE.CylinderGeometry(.025,.04,.7,7),dark);mast.position.set(.48,1.35,-.25);g.add(mast);
+    const antenna=new THREE.Mesh(new THREE.SphereGeometry(.12,8,6),roof);antenna.scale.set(.7,1.2,.7);antenna.position.set(.48,1.7,-.25);g.add(antenna);
+  } else if(index===1||index===4){
+    // IMO／OA：現代化資訊中心，玻璃帷幕與伺服器機房並列。
+    box(-.16,.62,0,1.0,1.05,.92,wall);box(-.16,1.18,0,1.08,.1,1.0,roof);
+    for(let row=0;row<3;row++)for(let col=0;col<3;col++)box(-.49+col*.31,.48+row*.25,.468,.22,.16,.025,glass);
+    box(.62,.48,.05,.5,.78,.62,dark);box(.62,.89,.05,.53,.08,.65,roof);
+    for(let j=0;j<3;j++){box(.62,.3+j*.2,.37,.32,.035,.025,glass);box(.76,.3+j*.2,.39,.035,.035,.018,roof)}
+    box(-.16,.22,-.48,1.05,.08,.08,concrete);
+  } else {
+    // 弱電工程：現場維運工務站、車庫門、器材棚與安全警示標誌。
+    box(0,.43,0,1.22,.68,.92,wall);box(0,.81,0,1.32,.12,1.02,roof);
+    box(-.23,.38,.468,.48,.48,.025,dark);box(-.23,.38,.49,.34,.34,.015,concrete);
+    box(.42,.45,.475,.28,.28,.025,glass);
+    box(.02,.18,-.49,.9,.12,.08,roof);
+    for(let j=0;j<3;j++){const stripe=box(-.34+j*.28,.22,-.535,.13,.035,.018,j%2?dark:roof)}
+    const pole=new THREE.Mesh(new THREE.CylinderGeometry(.025,.04,.65,7),dark);pole.position.set(.75,1.1,-.2);g.add(pole);
+    const cross=new THREE.Mesh(new THREE.BoxGeometry(.42,.045,.045),roof);cross.position.set(.75,1.25,-.2);g.add(cross);
+  }
+  return g;
+}
+
 function makeIslandTheme(index,color){
   // 每座島加入符合業務名稱的辨識物件，維持輕量低多邊形風格。
   const g=new THREE.Group(); const metal=new THREE.MeshStandardMaterial({color:0x718c98,roughness:.75});
@@ -65,7 +102,7 @@ function makeIslandTheme(index,color){
   } else if(index===1||index===4){ // IMO / OA：伺服器、文件與辦公系統
     rack(.95,.58);rack(1.35,.58);box(-1.05,.42,.6,.48,.12,.34,accent);box(-1.05,.52,.6,.38,.04,.25,light);
     for(let i=0;i<3;i++)box(-1.18+i*.13,.57,.6,.06,.025,.06,dark);
-  } else if(index===2||index===5){ // 弱電工程：資通塔、天線與工程工具
+  } else if(index===2||index===5){ // 弱電工程：通訊塔、天線與工程工具
     pole(1.05,.55,1.55);for(let j=0;j<3;j++){const cross=box(1.05,.75+j*.34,.55,.72,.045,.045,accent);cross.rotation.z=(j%2?-.12:.12)}
     const dish=new THREE.Mesh(new THREE.SphereGeometry(.26,12,8,0,Math.PI,0,Math.PI),light);dish.position.set(-1.12,.85,.55);dish.rotation.z=-.55;g.add(dish);
     box(-1.1,.38,-.55,.42,.3,.3,accent);box(-1.1,.56,-.55,.3,.08,.22,metal);
@@ -74,7 +111,7 @@ function makeIslandTheme(index,color){
 }
 function labelSprite(text){const c=document.createElement('canvas');c.width=512;c.height=100;const ctx=c.getContext('2d');ctx.fillStyle='rgba(255,253,246,.95)';ctx.beginPath();ctx.roundRect(4,4,504,92,26);ctx.fill();ctx.strokeStyle='rgba(65,125,133,.22)';ctx.lineWidth=3;ctx.stroke();ctx.fillStyle='#234b5c';ctx.font='bold 29px system-ui,"Noto Sans TC",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text,256,51);const tex=new THREE.CanvasTexture(c);tex.colorSpace=THREE.SRGBColorSpace;const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthTest:false}));sp.scale.set(3.45,.68,1);sp.position.y=2.35;return sp}
 units.forEach((u,i)=>{const [x,_,z]=positions[i],g=new THREE.Group();g.position.set(x,0,z);g.userData.unitId=u.id;const shape=new THREE.CylinderGeometry(2.05,2.25,.65,7,1);shape.rotateY(Math.PI/7);const rock=new THREE.Mesh(shape,new THREE.MeshStandardMaterial({color:0xb9d9be,roughness:1}));rock.position.y=-.15;rock.castShadow=true;rock.receiveShadow=true;g.add(rock);const topGeo=new THREE.CylinderGeometry(1.98,2.05,.18,7,1);topGeo.rotateY(Math.PI/7);const top=new THREE.Mesh(topGeo,new THREE.MeshStandardMaterial({color:u.color,roughness:.88}));top.position.y=.22;top.receiveShadow=true;g.add(top);
-const building=makeBuilding(-.25,.05,u.color);building.position.y=.28;g.add(building);const theme=makeIslandTheme(i,u.color);theme.position.y=.22;g.add(theme);g.add(makeTree(-1.15,-.25,.85),makeTree(.95,.35,.78),makeTree(.8,-.8,.6));const badge=new THREE.Mesh(new THREE.CylinderGeometry(.28,.28,.12,24),new THREE.MeshStandardMaterial({color:0xffffff}));badge.position.set(0,1.27,0);g.add(badge);const orb=new THREE.Mesh(new THREE.SphereGeometry(.17,16,12),new THREE.MeshStandardMaterial({color:0x4b9f9c,emissive:0x245c58,emissiveIntensity:.4}));orb.position.set(0,1.46,0);g.add(orb);g.add(labelSprite(u.short));islandGroup.add(g);islandMeshes.push({mesh:g,unit:u,orb,top});});
+const building=makeDepartmentBuilding(i,u.color);building.position.set(-.25,.12,.05);g.add(building);const theme=makeIslandTheme(i,u.color);theme.position.y=.22;g.add(theme);g.add(makeTree(-1.15,-.25,.85),makeTree(.95,.35,.78),makeTree(.8,-.8,.6));const badge=new THREE.Mesh(new THREE.CylinderGeometry(.28,.28,.12,24),new THREE.MeshStandardMaterial({color:0xffffff}));badge.position.set(0,1.27,0);g.add(badge);const orb=new THREE.Mesh(new THREE.SphereGeometry(.17,16,12),new THREE.MeshStandardMaterial({color:0x4b9f9c,emissive:0x245c58,emissiveIntensity:.4}));orb.position.set(0,1.46,0);g.add(orb);g.add(labelSprite(u.short));islandGroup.add(g);islandMeshes.push({mesh:g,unit:u,orb,top});});
 // Bridges visually connect the island network.
 const bridgeLinks=[[0,1],[1,2],[0,3],[2,5],[3,4],[4,5],[1,6],[3,6],[4,6],[5,6]];
 function bridge(a,b){const p1=new THREE.Vector3(...positions[a]);const p2=new THREE.Vector3(...positions[b]);const d=p2.clone().sub(p1);const span=Math.max(1,d.length()-4.05);const mesh=new THREE.Mesh(new THREE.BoxGeometry(.24,.12,span),new THREE.MeshStandardMaterial({color:0xe8c99a,roughness:.9}));mesh.position.copy(p1.clone().add(p2).multiplyScalar(.5));mesh.rotation.y=Math.atan2(d.x,d.z);mesh.position.y=.34;mesh.castShadow=true;islandGroup.add(mesh);
@@ -97,7 +134,15 @@ function makeWalker(role,color){
   const g=new THREE.Group();
   const mat=(c,roughness=.82)=>new THREE.MeshStandardMaterial({color:c,roughness});
   const skin=mat(0xffd2ae), shirt=mat(color), pants=mat(0x344f63), shoes=mat(0x263943), hair=mat(0x39414a);
+  // 高可視度工地背心：螢光橘背心、肩帶與銀灰反光條
   const torso=new THREE.Mesh(new THREE.CapsuleGeometry(.105,.22,3,7),shirt); torso.position.y=.48; torso.castShadow=true; g.add(torso);
+  const vest=mat(0xff7a18,.58), reflective=mat(0xe8edf0,.38), vestTrim=mat(0xffd34d,.6);
+  const vestBody=new THREE.Mesh(new THREE.BoxGeometry(.205,.245,.035),vest); vestBody.position.set(0,.49,.092); vestBody.castShadow=true; g.add(vestBody);
+  // 背心前方兩條垂直反光帶與腰部水平反光帶
+  for(const x of [-.057,.057]){const strip=new THREE.Mesh(new THREE.BoxGeometry(.022,.235,.008),reflective);strip.position.set(x,.49,.113);g.add(strip)}
+  const waistStrip=new THREE.Mesh(new THREE.BoxGeometry(.198,.027,.009),reflective);waistStrip.position.set(0,.425,.114);g.add(waistStrip);
+  // 肩部螢光黃邊條，增加工地安全背心辨識度
+  for(const x of [-.067,.067]){const strap=new THREE.Mesh(new THREE.BoxGeometry(.035,.085,.04),vestTrim);strap.position.set(x,.605,.088);strap.rotation.z=x<0?-.18:.18;g.add(strap)}
   const head=new THREE.Mesh(new THREE.SphereGeometry(.105,10,8),skin); head.position.y=.72;
   g.add(head);
   const hairCap=new THREE.Mesh(new THREE.SphereGeometry(.108,10,6,0,Math.PI*2,0,Math.PI*.48),hair); hairCap.position.set(0,.755,0); g.add(hairCap);
