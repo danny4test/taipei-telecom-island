@@ -114,9 +114,30 @@ units.forEach((u,i)=>{const [x,_,z]=positions[i],g=new THREE.Group();g.position.
 const building=makeDepartmentBuilding(i,u.color);building.position.set(-.25,.12,.05);g.add(building);const theme=makeIslandTheme(i,u.color);theme.position.y=.22;g.add(theme);g.add(makeTree(-1.15,-.25,.85),makeTree(.95,.35,.78),makeTree(.8,-.8,.6));const badge=new THREE.Mesh(new THREE.CylinderGeometry(.28,.28,.12,24),new THREE.MeshStandardMaterial({color:0xffffff}));badge.position.set(0,1.27,0);g.add(badge);const orb=new THREE.Mesh(new THREE.SphereGeometry(.17,16,12),new THREE.MeshStandardMaterial({color:0x4b9f9c,emissive:0x245c58,emissiveIntensity:.4}));orb.position.set(0,1.46,0);g.add(orb);g.add(labelSprite(u.short));islandGroup.add(g);islandMeshes.push({mesh:g,unit:u,orb,top});});
 // Bridges visually connect the island network.
 const bridgeLinks=[[0,1],[1,2],[0,3],[2,5],[3,4],[4,5],[1,6],[3,6],[4,6],[5,6]];
-function bridge(a,b){const p1=new THREE.Vector3(...positions[a]);const p2=new THREE.Vector3(...positions[b]);const d=p2.clone().sub(p1);const span=Math.max(1,d.length()-4.05);const mesh=new THREE.Mesh(new THREE.BoxGeometry(.24,.12,span),new THREE.MeshStandardMaterial({color:0xe8c99a,roughness:.9}));mesh.position.copy(p1.clone().add(p2).multiplyScalar(.5));mesh.rotation.y=Math.atan2(d.x,d.z);mesh.position.y=.34;mesh.castShadow=true;islandGroup.add(mesh);
-// 護欄讓橋梁在俯視角也清楚可見
-for(const side of [-1,1]){const rail=new THREE.Mesh(new THREE.BoxGeometry(.055,.18,span),new THREE.MeshStandardMaterial({color:0xb98e5a,roughness:.85}));rail.position.copy(mesh.position);rail.position.y=.48;rail.position.x+=Math.cos(Math.atan2(d.x,d.z))*side*.13;rail.rotation.y=mesh.rotation.y;islandGroup.add(rail)}}bridgeLinks.forEach(p=>bridge(...p));
+const escalatorSteps=[];
+function bridge(a,b){
+  const p1=new THREE.Vector3(...positions[a]),p2=new THREE.Vector3(...positions[b]);
+  const d=p2.clone().sub(p1); const dir=d.clone().normalize();
+  const span=Math.max(1,d.length()-4.25), center=p1.clone().add(p2).multiplyScalar(.5);
+  const angle=Math.atan2(d.x,d.z);
+  // 電動手扶梯本體：深色運輸帶、金屬側板與扶手
+  const base=new THREE.Mesh(new THREE.BoxGeometry(.42,.13,span),new THREE.MeshStandardMaterial({color:0x435c64,metalness:.38,roughness:.52}));
+  base.position.copy(center);base.position.y=.34;base.rotation.y=angle;base.castShadow=true;islandGroup.add(base);
+  const belt=new THREE.Mesh(new THREE.BoxGeometry(.31,.035,span-.08),new THREE.MeshStandardMaterial({color:0x253c43,metalness:.25,roughness:.65}));belt.position.copy(center);belt.position.y=.425;belt.rotation.y=angle;islandGroup.add(belt);
+  for(const side of [-1,1]){
+    const rail=new THREE.Mesh(new THREE.BoxGeometry(.055,.2,span),new THREE.MeshStandardMaterial({color:0xc2d5d3,metalness:.55,roughness:.32}));
+    rail.position.copy(center);rail.position.y=.57;rail.position.x+=Math.cos(angle)*side*.235;rail.position.z-=Math.sin(angle)*side*.235;rail.rotation.y=angle;islandGroup.add(rail);
+    const hand=new THREE.Mesh(new THREE.BoxGeometry(.075,.045,span),new THREE.MeshStandardMaterial({color:0x172e35,roughness:.4}));hand.position.copy(rail.position);hand.position.y=.68;hand.rotation.y=angle;islandGroup.add(hand);
+  }
+  // 連續循環的移動踏板，動畫中沿連線方向滑動
+  const count=Math.max(7,Math.floor(span*3));
+  for(let i=0;i<count;i++){
+    const step=new THREE.Mesh(new THREE.BoxGeometry(.27,.035,.13),new THREE.MeshStandardMaterial({color:i%2?0xb5c8c4:0xe2e9e5,metalness:.25,roughness:.55}));
+    step.rotation.y=angle;islandGroup.add(step);
+    escalatorSteps.push({mesh:step,p1:p1.clone().add(dir.clone().multiplyScalar(2.15)),dir,span,phase:i/count});
+  }
+}
+bridgeLinks.forEach(p=>bridge(...p));
 // === 預設只顯示科長；其他同仁由使用者新增 ===
 // 角色以簡單低多邊形模型製作，沿島嶼或橋梁路線巡走。
 function tinyRoleLabel(text){
@@ -132,30 +153,37 @@ function tinyRoleLabel(text){
 }
 function makeWalker(role,color){
   const g=new THREE.Group();
-  const mat=(c,roughness=.82)=>new THREE.MeshStandardMaterial({color:c,roughness});
-  const skin=mat(0xffd2ae), shirt=mat(color), pants=mat(0x344f63), shoes=mat(0x263943), hair=mat(0x39414a);
-  // 高可視度工地背心：螢光橘背心、肩帶與銀灰反光條
-  const torso=new THREE.Mesh(new THREE.CapsuleGeometry(.105,.22,3,7),shirt); torso.position.y=.48; torso.castShadow=true; g.add(torso);
-  const vest=mat(0xff7a18,.58), reflective=mat(0xe8edf0,.38), vestTrim=mat(0xffd34d,.6);
-  const vestBody=new THREE.Mesh(new THREE.BoxGeometry(.205,.245,.035),vest); vestBody.position.set(0,.49,.092); vestBody.castShadow=true; g.add(vestBody);
-  // 背心前方兩條垂直反光帶與腰部水平反光帶
-  for(const x of [-.057,.057]){const strip=new THREE.Mesh(new THREE.BoxGeometry(.022,.235,.008),reflective);strip.position.set(x,.49,.113);g.add(strip)}
-  const waistStrip=new THREE.Mesh(new THREE.BoxGeometry(.198,.027,.009),reflective);waistStrip.position.set(0,.425,.114);g.add(waistStrip);
-  // 肩部螢光黃邊條，增加工地安全背心辨識度
-  for(const x of [-.067,.067]){const strap=new THREE.Mesh(new THREE.BoxGeometry(.035,.085,.04),vestTrim);strap.position.set(x,.605,.088);strap.rotation.z=x<0?-.18:.18;g.add(strap)}
-  const head=new THREE.Mesh(new THREE.SphereGeometry(.105,10,8),skin); head.position.y=.72;
-  g.add(head);
-  const hairCap=new THREE.Mesh(new THREE.SphereGeometry(.108,10,6,0,Math.PI*2,0,Math.PI*.48),hair); hairCap.position.set(0,.755,0); g.add(hairCap);
-  const armGeo=new THREE.CapsuleGeometry(.035,.16,2,6), legGeo=new THREE.CapsuleGeometry(.038,.16,2,6);
+  const mat=(c,roughness=.78,metalness=0)=>new THREE.MeshStandardMaterial({color:c,roughness,metalness});
+  const skin=mat(0xf0bd98), hair=mat(0x352a26), jacket=mat(0xff791f,.62), yellow=mat(0xffd63e,.48), reflective=mat(0xf1f4ed,.35,.12), pants=mat(0x304b5b), boots=mat(0x202c32), seam=mat(0x1c4b59);
+  // 頭部、髮型與清楚五官（正面朝 +Z）
+  const head=new THREE.Mesh(new THREE.SphereGeometry(.112,16,12),skin);head.position.set(0,.79,0);head.castShadow=true;g.add(head);
+  const hairCap=new THREE.Mesh(new THREE.SphereGeometry(.118,16,10,0,Math.PI*2,0,Math.PI*.58),hair);hairCap.position.set(0,.83,-.005);g.add(hairCap);
+  const fringe=new THREE.Mesh(new THREE.SphereGeometry(.09,12,8,0,Math.PI,0,Math.PI*.55),hair);fringe.position.set(0,.845,.055);fringe.rotation.x=-.18;g.add(fringe);
+  for(const x of [-.041,.041]){const eye=new THREE.Mesh(new THREE.SphereGeometry(.012,8,6),mat(0x20272b,.35));eye.position.set(x,.795,.101);g.add(eye);const brow=new THREE.Mesh(new THREE.BoxGeometry(.03,.008,.008),hair);brow.position.set(x,.817,.102);brow.rotation.z=x<0?-.08:.08;g.add(brow)}
+  const nose=new THREE.Mesh(new THREE.SphereGeometry(.012,8,6),skin);nose.scale.set(.7,.8,.7);nose.position.set(0,.775,.112);g.add(nose);
+  const mouth=new THREE.Mesh(new THREE.BoxGeometry(.035,.006,.006),mat(0x8b5143));mouth.position.set(0,.754,.106);g.add(mouth);
+  // 完整長袖反光工地外套，胸前口袋、拉鍊、背部反光條
+  const torso=new THREE.Mesh(new THREE.BoxGeometry(.235,.27,.13),jacket);torso.position.set(0,.51,0);torso.castShadow=true;g.add(torso);
+  const zipper=new THREE.Mesh(new THREE.BoxGeometry(.009,.23,.008),seam);zipper.position.set(0,.51,.069);g.add(zipper);
+  for(const x of [-.067,.067]){const band=new THREE.Mesh(new THREE.BoxGeometry(.027,.245,.009),reflective);band.position.set(x,.515,.071);g.add(band);const pocket=new THREE.Mesh(new THREE.BoxGeometry(.045,.045,.009),mat(0xe96719));pocket.position.set(x*.7,.555,.074);g.add(pocket)}
+  const chestBand=new THREE.Mesh(new THREE.BoxGeometry(.23,.028,.01),reflective);chestBand.position.set(0,.445,.071);g.add(chestBand);
+  // 背面反光條，轉身時也能看見完整工地服
+  const backBand=new THREE.Mesh(new THREE.BoxGeometry(.23,.03,.009),reflective);backBand.position.set(0,.49,-.069);g.add(backBand);
+  for(const x of [-.066,.066]){const backVertical=new THREE.Mesh(new THREE.BoxGeometry(.025,.23,.009),reflective);backVertical.position.set(x,.515,-.069);g.add(backVertical)}
+  // 長袖手臂、反光袖條、完整長褲與工地靴
   const arms=[],legs=[];
   for(const side of [-1,1]){
-    const arm=new THREE.Mesh(armGeo,skin); arm.position.set(side*.145,.49,0); arm.rotation.z=side*.22; g.add(arm); arms.push(arm);
-    const leg=new THREE.Mesh(legGeo,pants); leg.position.set(side*.055,.23,0); g.add(leg); legs.push(leg);
-    const shoe=new THREE.Mesh(new THREE.BoxGeometry(.09,.045,.14),shoes); shoe.position.set(side*.055,.105,.025); g.add(shoe);
+    const upper=new THREE.Mesh(new THREE.CapsuleGeometry(.038,.105,3,8),jacket);upper.position.set(side*.155,.535,0);upper.rotation.z=side*.18;upper.castShadow=true;g.add(upper);arms.push(upper);
+    const cuff=new THREE.Mesh(new THREE.CylinderGeometry(.037,.037,.035,10),reflective);cuff.position.set(side*.17,.435,0);cuff.rotation.z=Math.PI/2;g.add(cuff);
+    const hand=new THREE.Mesh(new THREE.SphereGeometry(.032,8,6),skin);hand.position.set(side*.18,.405,0);g.add(hand);
+    const leg=new THREE.Mesh(new THREE.CapsuleGeometry(.045,.17,3,8),pants);leg.position.set(side*.058,.245,0);leg.castShadow=true;g.add(leg);legs.push(leg);
+    const trouserBand=new THREE.Mesh(new THREE.CylinderGeometry(.046,.046,.025,10),reflective);trouserBand.position.set(side*.058,.17,0);g.add(trouserBand);
+    const boot=new THREE.Mesh(new THREE.BoxGeometry(.09,.065,.14),boots);boot.position.set(side*.058,.105,.025);boot.castShadow=true;g.add(boot);
   }
-  // 領口識別點
-  const badge=new THREE.Mesh(new THREE.SphereGeometry(.025,7,6),mat(0xffe49a)); badge.position.set(0,.54,.1); g.add(badge);
-  g.add(tinyRoleLabel(role)); g.userData.walkParts={arms,legs}; return g;
+  const collar=new THREE.Mesh(new THREE.BoxGeometry(.09,.035,.14),yellow);collar.position.set(0,.655,0);g.add(collar);
+  const belt=new THREE.Mesh(new THREE.BoxGeometry(.22,.025,.14),mat(0x263a40));belt.position.set(0,.365,0);g.add(belt);
+  const badge=new THREE.Mesh(new THREE.BoxGeometry(.045,.035,.012),mat(0xffe7a0));badge.position.set(-.045,.56,.079);g.add(badge);
+  g.add(tinyRoleLabel(role));g.userData.walkParts={arms,legs};return g;
 }
 const walkers=[];
 const walkerSpecs=[
@@ -213,16 +241,38 @@ document.querySelector('#eventForm').addEventListener('submit',e=>{e.preventDefa
 document.querySelector('#exportBtn').onclick=()=>{const blob=new Blob([JSON.stringify({title:'中華電信台北營運處資通科組織群島',exportedAt:new Date().toISOString(),units:units.map(u=>({...u,...data[u.id]}))},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='cht-org-islands.json';a.click();URL.revokeObjectURL(a.href);showToast('已匯出 JSON 備份')};document.querySelector('#resetView').onclick=()=>{camera.position.set(0,13,20);controls.target.set(0,1,0);controls.update()};
 function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}new ResizeObserver(resize).observe(canvas);resize();renderUI();
 const clock=new THREE.Clock();function animate(){requestAnimationFrame(animate);const t=clock.getElapsedTime();
+  escalatorSteps.forEach(s=>{const u=(s.phase+t*.22)%1;const pos=s.p1.clone().add(s.dir.clone().multiplyScalar(u*s.span));s.mesh.position.set(pos.x,.455,pos.z)});
   islandMeshes.forEach((o,i)=>{o.orb.position.y=1.46+Math.sin(t*1.5+i)*.08});
   walkers.forEach(w=>{
+    if(w.nextPause===undefined){w.nextPause=t+7+Math.random()*8;w.pauseStart=-1;w.pauseDuration=1.35+Math.random()*.65;w.pauseFacing=0;w.pauseTurn=0;}
     if((!w.route||w.route.length<2)&&!w.task)startPatrol(w);
+    let from=null,to=null,dx=0,dz=0;
     if(w.route&&w.route.length>1){
-      let from=w.route[w.routeIndex],to=w.route[w.routeIndex+1];
+      from=w.route[w.routeIndex];to=w.route[w.routeIndex+1];
       if(!to){if(w.task){w.model.position.copy(w.route[w.route.length-1]);w.model.position.y=w.baseY;w.route=null;w.task=null;w.taskSprite.visible=false;startPatrol(w)}else{startPatrol(w);from=w.route[0];to=w.route[1]}}
-      if(to){const distance=from.distanceTo(to);w.routeProgress+=w.speed*.018;const f=Math.min(1,w.routeProgress/Math.max(.001,distance));w.model.position.lerpVectors(from,to,f);w.model.position.y=w.baseY+Math.abs(Math.sin(t*13+w.offset))*.035;const dx=to.x-from.x,dz=to.z-from.z;w.model.rotation.y=Math.atan2(-dx,-dz);if(f>=1){w.routeIndex++;w.routeProgress=0;if(w.routeIndex>=w.route.length-1){if(w.task){w.model.position.copy(w.route[w.route.length-1]);w.route=null;w.routeProgress=0;w.model.position.y=w.baseY;showToast('工程師已抵達工作現場')}else{w.route=null}}}}
     }
-    const parts=w.model.userData.walkParts;const walking=!!w.route;const step=walking?Math.sin(t*13+w.offset)*.62:Math.sin(t*2+w.offset)*.04;
+    // 偶爾停下來看看四周，再自然轉回行進方向；任務派工時不插入停頓。
+    if(!w.task&&w.route&&t>=w.nextPause&&w.pauseStart<0){w.pauseStart=t;w.pauseFacing=w.model.rotation.y;w.pauseDuration=1.35+Math.random()*.65;w.pauseTurn=(Math.random()<.5?-1:1)*(Math.PI*.78);w.nextPause=t+10+Math.random()*12;}
+    const paused=w.pauseStart>=0&&t<w.pauseStart+w.pauseDuration;
+    if(w.pauseStart>=0&&!paused)w.pauseStart=-1;
+    if(to){
+      const distance=from.distanceTo(to);dx=to.x-from.x;dz=to.z-from.z;
+      if(!paused){w.routeProgress+=w.speed*.018;const f=Math.min(1,w.routeProgress/Math.max(.001,distance));w.model.position.lerpVectors(from,to,f);w.model.position.y=w.baseY+Math.abs(Math.sin(t*8.5+w.offset))*.012;
+        // 模型正面朝 +Z，因此以 atan2(dx,dz) 讓臉朝向前進方向，而不是背對前進。
+        w.model.rotation.y=Math.atan2(dx,dz);
+        if(f>=1){w.routeIndex++;w.routeProgress=0;if(w.routeIndex>=w.route.length-1){if(w.task){w.model.position.copy(w.route[w.route.length-1]);w.route=null;w.routeProgress=0;w.model.position.y=w.baseY;showToast('工程師已抵達工作現場')}else{w.route=null}}}
+      }else{
+        w.model.position.y=w.baseY;
+        const q=Math.min(1,(t-w.pauseStart)/Math.max(.01,w.pauseDuration));
+        // 先轉身張望、輕輕擺動，再轉回原本朝向。
+        const turn=Math.sin(q*Math.PI)*w.pauseTurn;
+        w.model.rotation.y=w.pauseFacing+turn;
+      }
+    }
+    const parts=w.model.userData.walkParts;const walking=!!w.route&&!paused;const step=walking?Math.sin(t*8.5+w.offset)*.48:Math.sin(t*1.6+w.offset)*.025;
     parts.legs[0].rotation.x=step;parts.legs[1].rotation.x=-step;parts.arms[0].rotation.x=-step*.72;parts.arms[1].rotation.x=step*.72;
+    // 停下時有細微重心搖擺，避免僵硬定格。
+    w.model.rotation.z=paused?Math.sin(t*4+w.offset)*.025:Math.sin(t*1.8+w.offset)*.008;
     w.taskSprite.position.y=1.65+Math.sin(t*3+w.offset)*.04;
   });
   clouds.children.forEach((m,i)=>{m.position.x+=Math.sin(t*.12+i)*.0008});controls.update();renderer.render(scene,camera)}animate();
