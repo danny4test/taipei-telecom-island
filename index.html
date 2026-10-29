@@ -216,14 +216,28 @@ function makeWalker(role,color){
 // 科長專屬筋斗雲：蓬鬆雲團、金色星星與環繞雲氣，會跟著科長一起巡查。
 function makeNimbusCloud(){
   const cloud=new THREE.Group();
-  const white=new THREE.MeshStandardMaterial({color:0xfffdf3,roughness:.88,emissive:0x6d8792,emissiveIntensity:.12});
-  const pale=new THREE.MeshStandardMaterial({color:0xbfeaf2,roughness:.72,emissive:0x4ca9c6,emissiveIntensity:.32});
-  const puffs=[[-.28,0,0,.22],[-.13,.075,.015,.25],[.08,.06,0,.27],[.29,0,-.005,.2],[0,-.015,.08,.24]];
-  for(const [x,y,z,r] of puffs){const m=new THREE.Mesh(new THREE.SphereGeometry(r,14,10),white);m.position.set(x,y,z);m.scale.set(1,.62,.78);m.castShadow=true;cloud.add(m)}
-  const under=new THREE.Mesh(new THREE.SphereGeometry(.29,14,8),pale);under.position.set(0,-.06,-.015);under.scale.set(1.25,.34,.8);cloud.add(under);
-  const gold=new THREE.MeshStandardMaterial({color:0xffd45b,emissive:0xffa51e,emissiveIntensity:.85});
-  for(const [x,y,z] of [[-.42,.11,0],[.4,.13,.02],[.05,.19,-.04]]){const star=new THREE.Mesh(new THREE.OctahedronGeometry(.055,0),gold);star.position.set(x,y,z);cloud.add(star)}
-  cloud.position.set(0,-.13,0);cloud.userData.puffs=puffs;return cloud;
+  // 柔軟、蓬鬆的圓形筋斗雲：俯視長度與寬度相同，四周雲朵均勻鼓起。
+  const white=new THREE.MeshStandardMaterial({color:0xfffdf7,roughness:.96,emissive:0x829da5,emissiveIntensity:.10});
+  const pale=new THREE.MeshStandardMaterial({color:0xbcecf5,roughness:.9,emissive:0x4ca9c6,emissiveIntensity:.22});
+  const puffs=[
+    [0,.015,0,.285],[-.22,.005,0,.235],[.22,.005,0,.235],
+    [0,.045,.22,.235],[0,.045,-.22,.235],
+    [-.16,.055,.16,.205],[.16,.055,.16,.205],
+    [-.16,.055,-.16,.205],[.16,.055,-.16,.205]
+  ];
+  for(const [x,y,z,r] of puffs){const m=new THREE.Mesh(new THREE.SphereGeometry(r,16,12),white);m.position.set(x,y,z);m.scale.set(1,.72,1);m.castShadow=true;cloud.add(m)}
+  // 雲底做成圓潤的淡藍色陰影，與雲面同樣採等比例的水平尺寸。
+  const under=new THREE.Mesh(new THREE.SphereGeometry(.31,18,12),pale);under.position.set(0,-.075,0);under.scale.set(1,.34,1);cloud.add(under);
+  // 舒服的柔軟坐墊：淡藍色圓墊、奶油白外圈與輕柔暖光，像坐在雲朵沙發上。
+  const cushionMat=new THREE.MeshStandardMaterial({color:0xc9f3f6,roughness:1,emissive:0x6ecbd5,emissiveIntensity:.16});
+  const cushion=new THREE.Mesh(new THREE.SphereGeometry(.205,18,12),cushionMat);cushion.position.set(0,.105,0);cushion.scale.set(1,.22,1);cloud.add(cushion);
+  const rimMat=new THREE.MeshStandardMaterial({color:0xffe9b2,roughness:.9,emissive:0xffd77a,emissiveIntensity:.12});
+  const rim=new THREE.Mesh(new THREE.TorusGeometry(.205,.018,8,32),rimMat);rim.rotation.x=Math.PI/2;rim.position.y=.12;cloud.add(rim);
+  const gold=new THREE.MeshStandardMaterial({color:0xffd978,emissive:0xffbd45,emissiveIntensity:.65});
+  for(const [x,y,z] of [[-.36,.12,.12],[.36,.12,-.12],[0,.22,-.24]]){const star=new THREE.Mesh(new THREE.OctahedronGeometry(.043,0),gold);star.position.set(x,y,z);cloud.add(star)}
+  cloud.position.set(0,-.13,0);
+  // x、z 使用相同縮放，確保筋斗雲平面上的長度與寬度一致。
+  cloud.scale.set(1.65,1.28,1.65);cloud.userData.puffs=puffs;return cloud;
 }
 const walkers=[];
 const walkerSpecs=[
@@ -293,7 +307,7 @@ const clock=new THREE.Clock();function animate(){requestAnimationFrame(animate);
   walkers.forEach(w=>{
     if(w.model.userData.isChief&&w.model.userData.nimbus){
       const cloud=w.model.userData.nimbus;cloud.position.y=-.13+Math.sin(t*3.2+w.offset)*.075;cloud.rotation.z=Math.sin(t*1.7+w.offset)*.045;
-      cloud.children.forEach((part,i)=>{if(part.geometry&&part.geometry.type==='OctahedronGeometry'){part.rotation.y=t*1.5+i;part.position.y=.16+Math.sin(t*4+i)*.025}});
+      cloud.children.forEach((part,i)=>{if(part.geometry&&part.geometry.type==='OctahedronGeometry'){part.rotation.y=t*1.1+i;part.position.y=(i===2?.22:.12)+Math.sin(t*2.6+i)*.018}});
       // 科長持續飛在空中乘雲巡視，手臂微微張開，與地面步行同仁區分。
       const arms=w.model.userData.walkParts.arms;arms[0].rotation.x=-.18+Math.sin(t*2.2)*.07;arms[1].rotation.x=-.18-Math.sin(t*2.2)*.07;
     }
