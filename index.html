@@ -20,7 +20,7 @@
 <body>
 <div class="app">
 <header><div class="brand"><div class="logo">🏝️</div><div><div class="eyebrow">CHT · TAIPEI OPERATIONS</div><h1>資通科・組織群島</h1><div class="sub">讓組織、夥伴與工作任務，在島上看得見</div></div></div><div class="top-actions"><button class="secondary hide-mobile" id="resetView">重設視角</button><button id="exportBtn">匯出資料</button></div></header>
-<main class="scene-wrap"><div class="scene-hint">🖱️ 拖曳旋轉・滾輪縮放｜小人持續巡查、沿可見橋梁跨島；新增事件後工程師前往目標建築</div><canvas id="scene"></canvas><div class="legend"><span>🏢 組織單位</span><span>🚶 自動巡走角色</span><span>📌 工作事件</span><span>🌉 跨單位協作</span></div><div class="toast" id="toast"></div></main>
+<main class="scene-wrap"><div class="scene-hint">🖱️ 拖曳旋轉・滾輪縮放｜科長乘筋斗雲在空中飛行巡查、同仁步行巡走；新增事件後工程師前往目標建築</div><canvas id="scene"></canvas><div class="legend"><span>🏢 組織單位</span><span>☁️ 科長乘雲飛在空中巡查</span><span>🚶 同仁步行巡走</span><span>📌 工作事件</span><span>🌉 跨單位協作</span></div><div class="toast" id="toast"></div></main>
 <aside class="side"><div class="eyebrow">ORGANIZATION MAP / 01</div><h2>組織總覽</h2><p>點選 3D 島嶼，管理單位成員、工作事件與協作事項。這是一個可自行編輯的前端原型。</p><div class="stats"><div class="stat"><strong id="unitCount">7</strong><small>組織單位</small></div><div class="stat"><strong id="peopleCount">0</strong><small>登錄人員</small></div><div class="stat"><strong id="eventCount">0</strong><small>工作事件</small></div></div>
 <div class="section-label">選擇組織單位</div><div class="mobile-tabs" id="mobileTabs"></div><div class="island-list" id="islandList"></div>
 <div class="section-label">目前選取</div><div id="unitDetails"></div>
@@ -185,6 +185,11 @@ function makeWalker(role,color){
   for(const x of [-.041,.041]){const eye=new THREE.Mesh(new THREE.SphereGeometry(.012,8,6),mat(0x20272b,.35));eye.position.set(x,.795,.101);g.add(eye);const brow=new THREE.Mesh(new THREE.BoxGeometry(.03,.008,.008),hair);brow.position.set(x,.817,.102);brow.rotation.z=x<0?-.08:.08;g.add(brow)}
   const nose=new THREE.Mesh(new THREE.SphereGeometry(.012,8,6),skin);nose.scale.set(.7,.8,.7);nose.position.set(0,.775,.112);g.add(nose);
   const mouth=new THREE.Mesh(new THREE.BoxGeometry(.035,.006,.006),mat(0x8b5143));mouth.position.set(0,.754,.106);g.add(mouth);
+  // 可愛紅暈與工地安全帽（保留瀏海與兩側頭髮）
+  const blushMat=mat(0xf58f91,.55);
+  for(const x of [-.073,.073]){const cheek=new THREE.Mesh(new THREE.SphereGeometry(.022,10,8),blushMat);cheek.scale.set(1,.62,.28);cheek.position.set(x,.772,.089);g.add(cheek)}
+  const helmet=mat(0xffd447,.45);const hatTop=new THREE.Mesh(new THREE.SphereGeometry(.12,14,8,0,Math.PI*2,0,Math.PI*.42),helmet);hatTop.position.set(0,.878,0);g.add(hatTop);
+  const hatBrim=new THREE.Mesh(new THREE.CylinderGeometry(.137,.137,.018,18),helmet);hatBrim.position.set(0,.855,0);g.add(hatBrim);
   // 完整長袖反光工地外套，胸前口袋、拉鍊、背部反光條
   const torso=new THREE.Mesh(new THREE.BoxGeometry(.235,.27,.13),jacket);torso.position.set(0,.51,0);torso.castShadow=true;g.add(torso);
   const zipper=new THREE.Mesh(new THREE.BoxGeometry(.009,.23,.008),seam);zipper.position.set(0,.51,.069);g.add(zipper);
@@ -208,16 +213,29 @@ function makeWalker(role,color){
   const badge=new THREE.Mesh(new THREE.BoxGeometry(.045,.035,.012),mat(0xffe7a0));badge.position.set(-.045,.56,.079);g.add(badge);
   g.add(tinyRoleLabel(role));g.userData.walkParts={arms,legs};return g;
 }
+// 科長專屬筋斗雲：蓬鬆雲團、金色星星與環繞雲氣，會跟著科長一起巡查。
+function makeNimbusCloud(){
+  const cloud=new THREE.Group();
+  const white=new THREE.MeshStandardMaterial({color:0xfffdf3,roughness:.88,emissive:0x6d8792,emissiveIntensity:.12});
+  const pale=new THREE.MeshStandardMaterial({color:0xbfeaf2,roughness:.72,emissive:0x4ca9c6,emissiveIntensity:.32});
+  const puffs=[[-.28,0,0,.22],[-.13,.075,.015,.25],[.08,.06,0,.27],[.29,0,-.005,.2],[0,-.015,.08,.24]];
+  for(const [x,y,z,r] of puffs){const m=new THREE.Mesh(new THREE.SphereGeometry(r,14,10),white);m.position.set(x,y,z);m.scale.set(1,.62,.78);m.castShadow=true;cloud.add(m)}
+  const under=new THREE.Mesh(new THREE.SphereGeometry(.29,14,8),pale);under.position.set(0,-.06,-.015);under.scale.set(1.25,.34,.8);cloud.add(under);
+  const gold=new THREE.MeshStandardMaterial({color:0xffd45b,emissive:0xffa51e,emissiveIntensity:.85});
+  for(const [x,y,z] of [[-.42,.11,0],[.4,.13,.02],[.05,.19,-.04]]){const star=new THREE.Mesh(new THREE.OctahedronGeometry(.055,0),gold);star.position.set(x,y,z);cloud.add(star)}
+  cloud.position.set(0,-.13,0);cloud.userData.puffs=puffs;return cloud;
+}
 const walkers=[];
 const walkerSpecs=[
   {island:6,role:'科長｜統籌一至七股',color:0x2f7181,phase:0.2,r:1.05,speed:.42}
 ]
 walkerSpecs.forEach((spec,i)=>{
-  const [cx,,cz]=positions[spec.island]; const model=makeWalker(spec.role,spec.color); model.userData.person={name:'科長',role:'統籌一股至七股',description:'科長為一股至七股的共同主管，負責整體方向、資源配置、跨股協調、重要事項決策與工作進度追蹤。',unitId:'all'}; model.userData.unitId='all';
-  model.position.set(cx+Math.cos(spec.phase)*spec.r,.34,cz+Math.sin(spec.phase)*spec.r);
+  const [cx,,cz]=positions[spec.island]; const model=makeWalker(spec.role,spec.color); model.userData.person={name:'科長',role:'統籌一股至七股',description:'科長為一股至七股的共同主管，乘著筋斗雲飛在空中巡查各島，負責整體方向、資源配置、跨股協調、重要事項決策與工作進度追蹤。',unitId:'all'}; model.userData.unitId='all';model.userData.isChief=true;
+  const nimbus=makeNimbusCloud();model.add(nimbus);model.userData.nimbus=nimbus;
+  model.position.set(cx+Math.cos(spec.phase)*spec.r,1.48,cz+Math.sin(spec.phase)*spec.r);
   islandGroup.add(model);
   const taskSprite=labelSprite(''); taskSprite.scale.set(2.6,.52,1); taskSprite.position.y=1.65; taskSprite.visible=false; model.add(taskSprite);
-  walkers.push({...spec,model,cx,cz,baseY:.34,offset:i*.7,taskSprite,route:null,routeIndex:0,routeProgress:0,task:null,homeIsland:spec.island});
+  walkers.push({...spec,model,cx,cz,baseY: model.userData.isChief ? 1.48 : .34,offset:i*.7,taskSprite,route:null,routeIndex:0,routeProgress:0,task:null,homeIsland:spec.island});
 });
 
 // 島嶼路網：新增人員可沿橋梁巡走；新增事件時，若有工程師會派往指定單位。
@@ -273,6 +291,12 @@ const clock=new THREE.Clock();function animate(){requestAnimationFrame(animate);
   });
   islandMeshes.forEach((o,i)=>{o.orb.position.y=1.46+Math.sin(t*1.5+i)*.08});
   walkers.forEach(w=>{
+    if(w.model.userData.isChief&&w.model.userData.nimbus){
+      const cloud=w.model.userData.nimbus;cloud.position.y=-.13+Math.sin(t*3.2+w.offset)*.075;cloud.rotation.z=Math.sin(t*1.7+w.offset)*.045;
+      cloud.children.forEach((part,i)=>{if(part.geometry&&part.geometry.type==='OctahedronGeometry'){part.rotation.y=t*1.5+i;part.position.y=.16+Math.sin(t*4+i)*.025}});
+      // 科長持續飛在空中乘雲巡視，手臂微微張開，與地面步行同仁區分。
+      const arms=w.model.userData.walkParts.arms;arms[0].rotation.x=-.18+Math.sin(t*2.2)*.07;arms[1].rotation.x=-.18-Math.sin(t*2.2)*.07;
+    }
     if(w.nextPause===undefined){w.nextPause=t+7+Math.random()*8;w.pauseStart=-1;w.pauseDuration=1.35+Math.random()*.65;w.pauseFacing=0;w.pauseTurn=0;}
     if((!w.route||w.route.length<2)&&!w.task)startPatrol(w);
     let from=null,to=null,dx=0,dz=0;
@@ -299,7 +323,7 @@ const clock=new THREE.Clock();function animate(){requestAnimationFrame(animate);
       }
     }
     const parts=w.model.userData.walkParts;const walking=!!w.route&&!paused;const step=walking?Math.sin(t*8.5+w.offset)*.48:Math.sin(t*1.6+w.offset)*.025;
-    parts.legs[0].rotation.x=step;parts.legs[1].rotation.x=-step;parts.arms[0].rotation.x=-step*.72;parts.arms[1].rotation.x=step*.72;
+    if(w.model.userData.isChief){parts.legs[0].rotation.x=-.12;parts.legs[1].rotation.x=-.12;}else{parts.legs[0].rotation.x=step;parts.legs[1].rotation.x=-step;parts.arms[0].rotation.x=-step*.72;parts.arms[1].rotation.x=step*.72;}
     // 停下時有細微重心搖擺，避免僵硬定格。
     w.model.rotation.z=paused?Math.sin(t*4+w.offset)*.025:Math.sin(t*1.8+w.offset)*.008;
     w.taskSprite.position.y=1.65+Math.sin(t*3+w.offset)*.04;
