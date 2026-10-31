@@ -46,7 +46,10 @@ const canvas=document.querySelector('#scene'),renderer=new THREE.WebGLRenderer({
 const scene=new THREE.Scene();scene.fog=new THREE.Fog(0xd7eee9,32,62);const camera=new THREE.PerspectiveCamera(38,1,.1,100);camera.position.set(0,23,34);const controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.maxPolarAngle=Math.PI*.48;controls.minDistance=11;controls.maxDistance=44;controls.target.set(0,1,0);
 scene.add(new THREE.HemisphereLight(0xf4fffc,0x7ba8a4,2));const sun=new THREE.DirectionalLight(0xfff5d9,3);sun.position.set(-7,14,8);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);scene.add(sun);
 const water=new THREE.Mesh(new THREE.PlaneGeometry(200,200),new THREE.MeshStandardMaterial({color:0x9fd8d4,roughness:.78,metalness:.02}));water.rotation.x=-Math.PI/2;water.position.y=-.55;scene.add(water);
-const islandGroup=new THREE.Group();scene.add(islandGroup);const islandMeshes=[];const positions=[[-6.2,0,-6.2],[0,0,-6.2],[6.2,0,-6.2],[-6.2,0,0],[0,0,0],[6.2,0,0],[0,0,6.2]];
+const islandGroup=new THREE.Group();scene.add(islandGroup);const islandMeshes=[];
+/* 中心正六邊形：一股居中；外圍由左側二股開始順時鐘排列為二至七股。 */
+const hexR=8.2, hexH=hexR*Math.sqrt(3)/2;
+const positions=[[0,0,0],[-hexR,0,0],[-hexR/2,0,-hexH],[hexR/2,0,-hexH],[hexR,0,0],[hexR/2,0,hexH],[-hexR/2,0,hexH]];
 function makeTree(x,z,s=1){const g=new THREE.Group();const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.07*s,.1*s,.45*s,5),new THREE.MeshStandardMaterial({color:0x9a7552}));trunk.position.y=.22*s;g.add(trunk);for(let i=0;i<3;i++){const cone=new THREE.Mesh(new THREE.ConeGeometry((.34-i*.07)*s,.55*s,6),new THREE.MeshStandardMaterial({color:[0x67ad83,0x80c18b,0x4f9978][i]}));cone.position.y=(.48+i*.22)*s;g.add(cone)}g.position.set(x,0,z);return g}
 function makeBuilding(x,z,color){const g=new THREE.Group();const base=new THREE.Mesh(new THREE.BoxGeometry(.72,.62,.66),new THREE.MeshStandardMaterial({color:0xfff6e4,roughness:.9}));base.position.y=.38;base.castShadow=true;g.add(base);const roof=new THREE.Mesh(new THREE.ConeGeometry(.58,.4,4),new THREE.MeshStandardMaterial({color,roughness:.85}));roof.rotation.y=Math.PI/4;roof.position.y=.88;roof.castShadow=true;g.add(roof);for(let i=0;i<2;i++){const win=new THREE.Mesh(new THREE.BoxGeometry(.13,.16,.02),new THREE.MeshStandardMaterial({color:0x83c6d0,emissive:0x244c53,emissiveIntensity:.15}));win.position.set(i? .19:-.19,.4,.341);g.add(win)}return g}
 function makeDepartmentBuilding(index,color){
@@ -144,34 +147,51 @@ const shape=new THREE.CylinderGeometry(2.05,2.25,.65,islandSides,1);shape.rotate
 const topGeo=new THREE.CylinderGeometry(1.98,2.05,.18,islandSides,1);topGeo.rotateY(islandYaw);const top=new THREE.Mesh(topGeo,new THREE.MeshStandardMaterial({color:u.color,roughness:.88}));top.position.y=.22;top.receiveShadow=true;g.add(top);
 const building=makeDepartmentBuilding(i,u.color);building.position.set(-.25,.12,.05);g.add(building);const theme=makeIslandTheme(i,u.color);theme.position.y=.22;g.add(theme);if(i===0||i===4)g.add(makeTree(-1.35,-.35,.68));else if(i===1||i===3||i===6)g.add(makeTree(.95,-.82,.55));else g.add(makeTree(-1.28,-.72,.5));const badge=new THREE.Mesh(new THREE.CylinderGeometry(.28,.28,.12,24),new THREE.MeshStandardMaterial({color:0xffffff}));badge.position.set(0,1.27,0);g.add(badge);const orb=new THREE.Mesh(new THREE.SphereGeometry(.17,16,12),new THREE.MeshStandardMaterial({color:0x4b9f9c,emissive:0x245c58,emissiveIntensity:.4}));orb.position.set(0,1.46,0);g.add(orb);g.add(labelSprite(`${u.name.split('｜')[0]}｜${u.short}`));islandGroup.add(g);islandMeshes.push({mesh:g,unit:u,orb,top});});
 // Bridges visually connect the island network.
-const bridgeLinks=[[0,1],[1,2],[3,4],[4,5],[0,3],[1,4],[2,5],[4,6],[3,6],[5,6]];
+// 中心一股連接六個外圍島；外圍六島彼此形成正六邊形環線。
+const bridgeLinks=[[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[1,2],[2,3],[3,4],[4,5],[5,6],[6,1]];
 const escalatorSteps=[];
 function bridge(a,b){
   const p1=new THREE.Vector3(...positions[a]),p2=new THREE.Vector3(...positions[b]);
   const d=p2.clone().sub(p1); const dir=d.clone().normalize();
-  const span=Math.max(1,d.length()-4.25), center=p1.clone().add(p2).multiplyScalar(.5);
+  const span=Math.max(1,d.length()-4.5), center=p1.clone().add(p2).multiplyScalar(.5);
   const angle=Math.atan2(d.x,d.z);
-  // 電動手扶梯本體：深色運輸帶、金屬側板與扶手
-  const base=new THREE.Mesh(new THREE.BoxGeometry(.42,.13,span),new THREE.MeshStandardMaterial({color:0x435c64,metalness:.38,roughness:.52}));
-  base.position.copy(center);base.position.y=.34;base.rotation.y=angle;base.castShadow=true;islandGroup.add(base);
-  const belt=new THREE.Mesh(new THREE.BoxGeometry(.31,.035,span-.08),new THREE.MeshStandardMaterial({color:0x253c43,metalness:.25,roughness:.65}));belt.position.copy(center);belt.position.y=.425;belt.rotation.y=angle;islandGroup.add(belt);
+  // 雲梯：柔和拱形的半透明雲橋、金色光帶與漂浮踏雲，取代機械式手扶梯。
+  const start=p1.clone().add(dir.clone().multiplyScalar(2.22));start.y=.38;
+  const finish=p2.clone().add(dir.clone().multiplyScalar(-2.22));finish.y=.38;
+  const mid=start.clone().add(finish).multiplyScalar(.5);mid.y=1.02;
+  const curve=new THREE.QuadraticBezierCurve3(start,mid,finish);
+  const cloudMat=new THREE.MeshStandardMaterial({color:0xeaf7f7,transparent:true,opacity:.72,roughness:.28,metalness:.12,emissive:0x8bcbd1,emissiveIntensity:.32});
+  const glowMat=new THREE.MeshStandardMaterial({color:0xffe8b0,emissive:0xffc96a,emissiveIntensity:.75,metalness:.35,roughness:.3});
+  const deck=new THREE.Mesh(new THREE.TubeGeometry(curve,40,.16,10,false),cloudMat);islandGroup.add(deck);
   for(const side of [-1,1]){
-    const rail=new THREE.Mesh(new THREE.BoxGeometry(.055,.2,span),new THREE.MeshStandardMaterial({color:0xc2d5d3,metalness:.55,roughness:.32}));
-    rail.position.copy(center);rail.position.y=.57;rail.position.x+=Math.cos(angle)*side*.235;rail.position.z-=Math.sin(angle)*side*.235;rail.rotation.y=angle;islandGroup.add(rail);
-    const hand=new THREE.Mesh(new THREE.BoxGeometry(.075,.045,span),new THREE.MeshStandardMaterial({color:0x172e35,roughness:.4}));hand.position.copy(rail.position);hand.position.y=.68;hand.rotation.y=angle;islandGroup.add(hand);
+    const offset=new THREE.Vector3(Math.cos(angle)*side*.42,0,-Math.sin(angle)*side*.42);
+    const railCurve=new THREE.QuadraticBezierCurve3(start.clone().add(offset).setY(.78),mid.clone().add(offset).setY(1.48),finish.clone().add(offset).setY(.78));
+    const rail=new THREE.Mesh(new THREE.TubeGeometry(railCurve,36,.045,8,false),glowMat);islandGroup.add(rail);
+    // 雲梯沿線的小型光珠，像串起兩座島的星光。
+    for(let k=1;k<5;k++){
+      const u=k/5,pt=railCurve.getPoint(u);
+      const bead=new THREE.Mesh(new THREE.SphereGeometry(.075,10,8),glowMat);bead.position.copy(pt);islandGroup.add(bead);
+    }
   }
-  // 連續循環的移動踏板，動畫中沿連線方向滑動
-  const count=Math.max(7,Math.floor(span*3));
+  // 雲朵落點，讓雲梯與島岸自然銜接。
+  [start,finish].forEach((pt,j)=>{
+    for(let k=0;k<3;k++){
+      const puff=new THREE.Mesh(new THREE.SphereGeometry(.22-k*.025,12,8),cloudMat);
+      puff.position.set(pt.x+(k-1)*.19,pt.y-.06+(k%2)*.04,pt.z+(j?-.08:.08));puff.scale.y=.62;islandGroup.add(puff);
+    }
+  });
+  // 漂浮踏雲沿拱形路徑移動，保留原本的行走動畫節奏。
+  const count=Math.max(9,Math.floor(span*2.6));
   for(let i=0;i<count;i++){
-    const step=new THREE.Mesh(new THREE.BoxGeometry(.27,.035,.13),new THREE.MeshStandardMaterial({color:i%2?0xb5c8c4:0xe2e9e5,metalness:.25,roughness:.55}));
+    const step=new THREE.Mesh(new THREE.BoxGeometry(.42,.075,.34),new THREE.MeshStandardMaterial({color:i%2?0xf5fbfa:0xffedc8,transparent:true,opacity:.94,metalness:.12,roughness:.38,emissive:i%2?0x5d9ea3:0x9a7139,emissiveIntensity:.18}));
     step.rotation.y=angle;islandGroup.add(step);
-    escalatorSteps.push({mesh:step,p1:p1.clone().add(dir.clone().multiplyScalar(2.15)),dir:dir.clone(),span,phase:i/count,a:p1.clone(),b:p2.clone()});
+    escalatorSteps.push({mesh:step,p1:start.clone(),dir:finish.clone().sub(start).normalize(),span:start.distanceTo(finish),phase:i/count,a:start.clone(),b:finish.clone(),arch:1.28});
   }
 }
 bridgeLinks.forEach(p=>bridge(...p));
 // === 大型閃光立牌：台北營運處 資通科 ===
 const signGroup=new THREE.Group();
-signGroup.position.set(0,0,-11.2); islandGroup.add(signGroup); // 放在上中（二股）島正後方，面向初始視角（鏡頭位於 +Z）
+signGroup.position.set(0,0,-9.2); islandGroup.add(signGroup); // 放在中心島後方，面向初始視角（鏡頭位於 +Z）
 const signMetal=new THREE.MeshStandardMaterial({color:0x263f4b,metalness:.72,roughness:.28});
 const signPostMat=new THREE.MeshStandardMaterial({color:0x6d8790,metalness:.68,roughness:.3});
 const postL=new THREE.Mesh(new THREE.BoxGeometry(.16,3.05,.18),signPostMat);postL.position.set(-2.12,1.90,0);signGroup.add(postL);
@@ -343,7 +363,7 @@ const clock=new THREE.Clock();function animate(){requestAnimationFrame(animate);
     // 預設沿橋樑 a→b 移動；若有人正在這段橋上行走，踏板動畫即跟隨其行進方向。
     let sign=1;const axis=s.b.clone().sub(s.a);const len2=axis.lengthSq();let nearest=Infinity,chosen=0;
     walkers.forEach(w=>{if(!w.route||w.route.length<2)return;const from=w.route[w.routeIndex],to=w.route[w.routeIndex+1];if(!from||!to)return;const v=w.model.position.clone().sub(s.a);const proj=Math.max(0,Math.min(1,v.dot(axis)/len2));const closest=s.a.clone().add(axis.clone().multiplyScalar(proj));const dist=w.model.position.distanceTo(closest);if(proj>.08&&proj<.92&&dist<.72&&dist<nearest){nearest=dist;chosen=Math.sign(to.clone().sub(from).dot(axis));}});
-    if(chosen)sign=chosen;let u=(s.phase+t*.22*sign)%1;if(u<0)u+=1;const pos=s.p1.clone().add(s.dir.clone().multiplyScalar(u*s.span));s.mesh.position.set(pos.x,.455,pos.z);
+    if(chosen)sign=chosen;let u=(s.phase+t*.22*sign)%1;if(u<0)u+=1;const pos=s.p1.clone().add(s.dir.clone().multiplyScalar(u*s.span));s.mesh.position.set(pos.x,.48+Math.sin(Math.PI*u)*(s.arch||0),pos.z);
   });
   islandMeshes.forEach((o,i)=>{o.orb.position.y=1.46+Math.sin(t*1.5+i)*.08});
   walkers.forEach(w=>{
