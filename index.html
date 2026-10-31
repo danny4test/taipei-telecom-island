@@ -185,7 +185,7 @@ function bridge(a,b){
   for(let i=0;i<count;i++){
     const step=new THREE.Mesh(new THREE.BoxGeometry(.42,.075,.34),new THREE.MeshStandardMaterial({color:i%2?0xf5fbfa:0xffedc8,transparent:true,opacity:.94,metalness:.12,roughness:.38,emissive:i%2?0x5d9ea3:0x9a7139,emissiveIntensity:.18}));
     step.rotation.y=angle;islandGroup.add(step);
-    escalatorSteps.push({mesh:step,p1:start.clone(),dir:finish.clone().sub(start).normalize(),span:start.distanceTo(finish),phase:i/count,a:start.clone(),b:finish.clone(),arch:1.28});
+    escalatorSteps.push({mesh:step,curve,phase:i/count,a:start.clone(),b:finish.clone(),direction:1});
   }
 }
 bridgeLinks.forEach(p=>bridge(...p));
@@ -360,10 +360,29 @@ function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setS
 const clock=new THREE.Clock();function animate(){requestAnimationFrame(animate);const t=clock.getElapsedTime();
   const flash=.55+.45*(.5+.5*Math.sin(t*5.2));frameMat.emissiveIntensity=1.0+2.1*flash;signBoard.material.emissiveIntensity=.25+.65*flash;signGlow.intensity=1.2+3.4*flash;signBeacons.forEach((b,i)=>{b.material.emissiveIntensity=.45+3.5*(.5+.5*Math.sin(t*7-i*.8));b.scale.setScalar(.8+.35*(.5+.5*Math.sin(t*7-i*.8)))});
   escalatorSteps.forEach(s=>{
-    // 預設沿橋樑 a→b 移動；若有人正在這段橋上行走，踏板動畫即跟隨其行進方向。
-    let sign=1;const axis=s.b.clone().sub(s.a);const len2=axis.lengthSq();let nearest=Infinity,chosen=0;
-    walkers.forEach(w=>{if(!w.route||w.route.length<2)return;const from=w.route[w.routeIndex],to=w.route[w.routeIndex+1];if(!from||!to)return;const v=w.model.position.clone().sub(s.a);const proj=Math.max(0,Math.min(1,v.dot(axis)/len2));const closest=s.a.clone().add(axis.clone().multiplyScalar(proj));const dist=w.model.position.distanceTo(closest);if(proj>.08&&proj<.92&&dist<.72&&dist<nearest){nearest=dist;chosen=Math.sign(to.clone().sub(from).dot(axis));}});
-    if(chosen)sign=chosen;let u=(s.phase+t*.22*sign)%1;if(u<0)u+=1;const pos=s.p1.clone().add(s.dir.clone().multiplyScalar(u*s.span));s.mesh.position.set(pos.x,.48+Math.sin(Math.PI*u)*(s.arch||0),pos.z);
+    const axis=s.b.clone().sub(s.a), len2=axis.lengthSq();
+    let nearest=Infinity, chosen=0;
+    walkers.forEach(w=>{
+      if(!w.route || w.route.length<2) return;
+      const from=w.route[w.routeIndex], to=w.route[w.routeIndex+1];
+      if(!from || !to) return;
+      const move=to.clone().sub(from), v=w.model.position.clone().sub(s.a);
+      const proj=Math.max(0,Math.min(1,v.dot(axis)/len2));
+      const closest=s.a.clone().add(axis.clone().multiplyScalar(proj));
+      const dist=w.model.position.distanceTo(closest);
+      if(proj>.06 && proj<.94 && dist<1.15 && dist<nearest){
+        const dot=move.dot(axis);
+        if(Math.abs(dot)>.05){ nearest=dist; chosen=Math.sign(dot); }
+      }
+    });
+    if(chosen) s.direction=chosen;
+    const u=((s.phase+t*.19*s.direction)%1+1)%1;
+    const pathU=s.direction>0 ? u : 1-u;
+    const pos=s.curve.getPointAt(pathU);
+    const tangent=s.curve.getTangentAt(pathU).multiplyScalar(s.direction);
+    s.mesh.position.set(pos.x,pos.y+.105,pos.z);
+    s.mesh.rotation.y=Math.atan2(tangent.x,tangent.z);
+    s.mesh.rotation.x=-Math.atan2(tangent.y,Math.sqrt(tangent.x*tangent.x+tangent.z*tangent.z));
   });
   islandMeshes.forEach((o,i)=>{o.orb.position.y=1.46+Math.sin(t*1.5+i)*.08});
   walkers.forEach(w=>{
