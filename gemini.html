@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>中華電信台北營運處｜資通科組織群島 V21</title>
+<style>
+:root{--ink:#19344b;--muted:#648095;--cream:#f7f6ef;--teal:#65c8c2;--line:#dce7e7;--coral:#ff977b;--gold:#f5c86b}*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:system-ui,-apple-system,"Noto Sans TC",sans-serif}button,input,textarea,select{font:inherit}button{cursor:pointer;border:0;border-radius:12px;padding:10px 14px;background:#1c5165;color:white;font-weight:700}button.secondary{background:#e8f1ef;color:#235267}button.danger{background:#ffe7df;color:#984a3a}.app{min-height:100vh;display:grid;grid-template-columns:minmax(0,1fr) 360px;grid-template-rows:auto minmax(500px,1fr)}header{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 26px;background:#fffdf8;border-bottom:1px solid var(--line)}.brand{display:flex;gap:12px;align-items:center}.logo{width:44px;height:44px;border-radius:15px;background:#d7f0e9;display:grid;place-items:center;font-size:23px}.eyebrow{font-size:11px;letter-spacing:.15em;color:#6b9294;font-weight:800}.brand h1{font-size:20px;margin:2px 0}.sub{font-size:12px;color:var(--muted)}.top-actions{display:flex;gap:8px;align-items:center}.scene-wrap{position:relative;min-height:560px;overflow:hidden;background:radial-gradient(ellipse at 50% 35%,#e2f5ed 0%,#d6eee9 44%,#b9e0df 100%)}#scene{position:absolute;inset:0;width:100%;height:100%;display:block}.scene-hint{position:absolute;top:18px;left:20px;z-index:2;padding:10px 13px;background:#ffffffc9;border:1px solid #ffffff;border-radius:14px;font-size:12px;color:#406b77;backdrop-filter:blur(8px)}.legend{position:absolute;bottom:18px;left:20px;display:flex;gap:8px;flex-wrap:wrap;z-index:2}.legend span{font-size:11px;padding:7px 10px;background:#ffffffc9;border-radius:20px;color:#426778}.side{background:#fffdf8;border-left:1px solid var(--line);padding:22px;overflow:auto;max-height:calc(100vh - 85px)}.side h2{font-size:20px;margin:4px 0 5px}.side p{font-size:13px;line-height:1.65;color:var(--muted)}.section-label{font-size:11px;font-weight:800;letter-spacing:.12em;color:#7ba09d;margin:22px 0 9px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0}.stat{padding:12px 10px;border-radius:14px;background:#f0f7f3}.stat strong{font-size:22px;display:block}.stat small{font-size:11px;color:#6e8b92}.island-list{display:flex;flex-direction:column;gap:8px}.island-item{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:14px;padding:10px;background:#fff;text-align:left;color:var(--ink);width:100%}.island-item.active{border-color:#66bdb4;background:#effaf5;box-shadow:0 0 0 2px #d8f1e9}.island-dot{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;font-size:17px;flex:none}.island-item strong{font-size:13px;display:block}.island-item small{font-size:11px;color:var(--muted)}.grow{flex:1}.count{font-size:11px;background:#edf3f0;border-radius:20px;padding:4px 7px}.panel-card{padding:14px;border:1px solid var(--line);border-radius:16px;background:#fff;margin-top:10px}.panel-card h3{font-size:15px;margin:0 0 5px}.pill{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.05em;padding:4px 7px;border-radius:20px;background:#fff1d5;color:#8c6a1e}.field{display:flex;flex-direction:column;gap:5px;margin:10px 0}.field label{font-size:12px;color:#527180;font-weight:700}.field input,.field textarea,.field select{width:100%;border:1px solid #d9e5e3;border-radius:10px;padding:10px;background:#fbfdfb;outline:none;color:var(--ink)}.field textarea{min-height:68px;resize:vertical}.form-actions{display:flex;gap:8px;margin-top:12px}.form-actions button{flex:1}.person-row,.event-row{display:flex;align-items:flex-start;gap:9px;padding:10px 0;border-bottom:1px solid #edf1ee}.avatar{width:34px;height:34px;border-radius:12px;background:#e4f4ee;display:grid;place-items:center;flex:none}.person-row strong,.event-row strong{font-size:13px;display:block}.person-row small,.event-row small{font-size:11px;color:var(--muted)}.empty{padding:15px;border-radius:12px;background:#f5f8f4;color:#78909a;font-size:12px;text-align:center}.toast{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);background:#173f50;color:white;padding:10px 16px;border-radius:24px;font-size:12px;opacity:0;pointer-events:none;transition:.25s;z-index:4}.toast.show{opacity:1}.footer-note{font-size:11px;color:#8ba0a5;margin-top:18px;line-height:1.6}.mobile-tabs{display:none}.person-row{cursor:pointer;border-radius:10px;padding:10px}.person-row:hover{background:#f0f8f4}.person-detail{position:fixed;inset:0;z-index:20;background:#173f5066;display:none;align-items:center;justify-content:center;padding:18px}.person-detail.open{display:flex}.person-detail-card{width:min(460px,100%);background:#fffdf8;border-radius:20px;padding:22px;box-shadow:0 20px 70px #173f5040}.person-detail-card h2{margin:8px 0}.person-detail-card p{white-space:pre-wrap;line-height:1.7;color:#587383}.person-detail-card .close-row{display:flex;justify-content:flex-end;gap:8px}
+.unit-detail{position:fixed;inset:0;z-index:30;background:#173f5077;display:none;align-items:center;justify-content:center;padding:18px}.unit-detail.open{display:flex}.unit-detail-card{position:relative;width:min(600px,100%);max-height:min(86vh,760px);overflow:auto;background:#fffdf8;border-radius:24px;box-shadow:0 24px 80px #173f5040;padding:24px}.unit-close{position:absolute;right:16px;top:16px;width:38px;height:38px;border-radius:12px;background:#e8f1ef;color:#235267}.unit-hero{display:flex;align-items:center;gap:18px;padding:8px 44px 20px 0;border-bottom:1px solid var(--line)}.unit-art{width:112px;height:112px;flex:none;display:grid;place-items:center;border-radius:28px;background:linear-gradient(145deg,#dff5ec,#c0e5df);font-size:54px;box-shadow:inset 0 -8px 0 #8ac9ba}.unit-hero h2{margin:7px 0 4px;font-size:24px}.unit-hero p{margin:0;color:var(--muted);font-size:13px}.unit-modal-body{padding:18px 2px 8px;line-height:1.75;color:#4f6d7c}.unit-modal-body>p{margin-top:0}.unit-modal-body h3{font-size:14px;color:var(--ink);margin-bottom:5px}.unit-modal-body ul{padding-left:22px;margin-top:6px}.unit-chief-note{padding:12px 14px;border-radius:14px;background:#edf8f2;color:#28675d;font-size:13px;font-weight:700;margin-top:16px}.unit-modal-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:14px}@media(max-width:560px){.unit-detail-card{padding:18px}.unit-hero{align-items:flex-start;gap:12px}.unit-art{width:78px;height:78px;border-radius:20px;font-size:38px}.unit-hero h2{font-size:20px}}
+@media(max-width:900px){.app{grid-template-columns:1fr;grid-template-rows:auto 58vh auto}header{padding:15px}.brand h1{font-size:16px}.top-actions .hide-mobile{display:none}.scene-wrap{min-height:440px}.side{max-height:none;border-left:0;border-top:1px solid var(--line);padding:18px}.stats{margin-top:12px}.mobile-tabs{display:flex;gap:8px;overflow:auto;padding-bottom:5px}.mobile-tabs button{white-space:nowrap}.island-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.scene-hint{top:12px;left:12px}.legend{left:12px;bottom:12px}}
+</style>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+</head>
+<body>
+<div class="app">
+<header><div class="brand"><div class="logo">🏝️</div><div><div class="eyebrow">CHT · TAIPEI OPERATIONS</div><h1>資通科・組織群島</h1><div class="sub">讓組織、夥伴與工作任務，在島上看得見 (V21)</div></div></div><div class="top-actions"><button class="secondary hide-mobile" id="resetView">重設視角</button><button id="exportBtn">匯出資料</button></div></header>
+<main class="scene-wrap"><div class="scene-hint">🖱️ 拖曳旋轉・滾輪縮放｜科長乘飛天魔毯在空中飛行巡查、同仁步行巡走；新增事件後工程師前往目標建築</div><canvas id="scene"></canvas><div class="legend"><span>🏝️ 七座特色業務島</span><span>☁️ 科長乘飛天魔毯在空中巡查</span><span>🚶 同仁步行巡走</span><span>📌 工作事件</span><span>🌉 跨單位協作</span></div><div class="toast" id="toast"></div></main>
+<aside class="side"><div class="eyebrow">ORGANIZATION MAP / 01</div><h2>組織總覽</h2><p>點選 3D 島嶼，管理單位成員、工作事件與協作事項。這是一個可自行編輯的前端原型。</p><div class="stats"><div class="stat"><strong id="unitCount">7</strong><small>組織單位</small></div><div class="stat"><strong id="peopleCount">0</strong><small>登錄人員</small></div><div class="stat"><strong id="eventCount">0</strong><small>工作事件</small></div></div>
+<div class="section-label">選擇組織單位</div><div class="mobile-tabs" id="mobileTabs"></div><div class="island-list" id="islandList"></div>
+<div class="section-label">目前選取</div><div id="unitDetails"></div>
+<div class="section-label">新增人員</div><form id="personForm"><div class="field"><label for="personName">姓名</label><input id="personName" placeholder="例如：王小明" required maxlength="40"></div><div class="field"><label for="personRole">職稱／負責工作</label><input id="personRole" placeholder="例如：網路工程師、裝機維運、行政支援（可留白）" maxlength="60"></div><div class="field"><label for="personDesc">人員詳細說明</label><textarea id="personDesc" placeholder="專長、負責工作、支援範圍、聯絡方式或備註…（點擊 3D 人員可查看）" maxlength="500"></textarea></div><div class="form-actions"><button type="submit">＋ 加入島嶼並加入 3D 場景</button></div></form>
+<div class="section-label">新增工作事件</div><form id="eventForm"><div class="field"><label for="eventTitle">事件／工作名稱</label><input id="eventTitle" placeholder="例如：PBX 設備汰換規劃" required maxlength="80"></div><div class="field"><label for="eventDate">預定日期</label><input id="eventDate" type="date"></div><div class="field"><label for="eventStatus">狀態</label><select id="eventStatus"><option>待處理</option><option>進行中</option><option>已完成</option><option>待協調</option></select></div><div class="field"><label for="eventNote">備註</label><textarea id="eventNote" placeholder="工作內容、協作單位或進度…" maxlength="300"></textarea></div><div class="form-actions"><button type="submit">＋ 建立事件</button></div></form>
+<div class="section-label">島上人員</div><div id="peopleList"></div><div class="section-label">工作事件</div><div id="eventsList"></div><div class="footer-note">資料目前儲存在這個瀏覽器（localStorage）。此展示版尚未連接公司帳號、伺服器或權限系統；匯出 JSON 可用來備份或交由工程師串接後端。</div></aside>
+</div>
+<div class="unit-detail" id="unitDetail" role="dialog" aria-modal="true" aria-labelledby="unitModalTitle"><div class="unit-detail-card"><button class="unit-close" id="closeUnitDetail" aria-label="關閉">✕</button><div class="unit-hero"><div class="unit-art" id="unitArt">☎️</div><div><div class="eyebrow">ISLAND PROFILE / 工作島介紹</div><h2 id="unitModalTitle">一股</h2><p id="unitModalSubtitle"></p></div></div><div class="unit-modal-body"><p id="unitModalDesc"></p><h3>主要業務</h3><ul id="unitModalTasks"></ul><div class="unit-chief-note">🧭 共同主管：科長（統籌一股至七股）</div></div><div class="unit-modal-actions"><button class="secondary" id="closeUnitDetail2">關閉介紹</button><button id="unitModalSelect">選取此單位</button></div></div></div>
+<div class="person-detail" id="personDetail" role="dialog" aria-modal="true"><div class="person-detail-card"><div class="eyebrow">PERSON PROFILE</div><h2 id="detailName">人員資料</h2><div class="pill" id="detailRole">職稱</div><p id="detailBody"></p><div class="close-row"><button class="secondary" id="closePersonDetail">關閉</button></div></div></div>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+const units=[
+{id:'u1',name:'一股｜PBX・IP Centrex 規劃',short:'PBX 規劃',icon:'☎️',color:0xf4a88e,desc:'負責 PBX 與 IP Centrex 相關產品的規劃設計、需求分析、工程協調及技術支援，協助確保企業語音服務穩定。'},
+{id:'u2',name:'二股｜IMO・OA 規劃設計',short:'IMO・OA',icon:'🖥️',color:0x8fc9e8,desc:'負責 IMO、OA 及相關資訊辦公系統的需求規劃、架構設計、設備管理與工程協調，提升辦公資訊服務品質。'},
+{id:'u3',name:'三股｜弱電工程規劃設計',short:'弱電工程',icon:'📡',color:0x9bd5ad,desc:'負責弱電系統工程的規劃與設計，包含現場需求評估、施工介面協調、設備規格確認及技術支援。'},
+{id:'u4',name:'四股｜PBX・IP Centrex 裝機維運',short:'裝機維運',icon:'🧰',color:0xf2cf79,desc:'負責 PBX／IP Centrex 相關設備裝機、設定、測試、障礙排除、維護回報及用戶端服務品質追蹤。'},
+{id:'u5',name:'五股｜IMO・OA 規劃設計',short:'IMO・OA',icon:'🗂️',color:0xc2b0ec,desc:'負責 IMO、OA 系統與辦公資訊設備管理，涵蓋規劃、採購協調、資產維護、權限管理及資訊安全配合事項。'},
+{id:'u6',name:'六股｜弱電工程裝機維運',short:'弱電維運',icon:'🔧',color:0xf0a8bb,desc:'負責弱電工程與相關產品的現場裝機、設備測試、定期維護、故障排除、施工品質確認及技術訓練。'},
+{id:'u7',name:'七股｜PBX・IP Centrex 裝機維運',short:'PBX 維運',icon:'🛠️',color:0x83d0c8,desc:'負責 PBX／IP Centrex 服務裝機與維護、用戶端故障排除、設備汰換協調、維運紀錄及服務品質管理。'}];
+const seed={};units.forEach(u=>seed[u.id]={people:[],events:[]});let data;try{data=JSON.parse(localStorage.getItem('cht-org-islands-v1'))||seed}catch{data=seed}units.forEach(u=>{if(!data[u.id])data[u.id]={people:[],events:[]}});let selected='u1';
+const canvas=document.querySelector('#scene'),renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;
+const scene=new THREE.Scene();scene.fog=new THREE.Fog(0xd7eee9,32,62);const camera=new THREE.PerspectiveCamera(38,1,.1,100);camera.position.set(0,23,34);const controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.maxPolarAngle=Math.PI*.48;controls.minDistance=11;controls.maxDistance=44;controls.target.set(0,1,0);
+scene.add(new THREE.HemisphereLight(0xf4fffc,0x7ba8a4,2));const sun=new THREE.DirectionalLight(0xfff5d9,3);sun.position.set(-7,14,8);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);scene.add(sun);
+const water=new THREE.Mesh(new THREE.PlaneGeometry(200,200),new THREE.MeshStandardMaterial({color:0x9fd8d4,roughness:.78,metalness:.02}));water.rotation.x=-Math.PI/2;water.position.y=-.55;scene.add(water);
+const islandGroup=new THREE.Group();scene.add(islandGroup);const islandMeshes=[];
+const hexR=8.2, hexH=hexR*Math.sqrt(3)/2;
+const positions=[[0,0,0],[-hexR,0,0],[-hexR/2,0,-hexH],[hexR/2,0,-hexH],[hexR,0,0],[hexR/2,0,hexH],[-hexR/2,0,hexH]];
+function makeTree(x,z,s=1){const g=new THREE.Group();const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.07*s,.1*s,.45*s,5),new THREE.MeshStandardMaterial({color:0x9a7552}));trunk.position.y=.22*s;g.add(trunk);for(let i=0;i<3;i++){const cone=new THREE.Mesh(new THREE.ConeGeometry((.34-i*.07)*s,.55*s,6),new THREE.MeshStandardMaterial({color:[0x67ad83,0x80c18b,0x4f9978][i]}));cone.position.y=(.48+i*.22)*s;g.add(cone)}g.position.set(x,0,z);return g}
+function makeDepartmentBuilding(index,color){
+  const g=new THREE.Group();
+  const wall=new THREE.MeshStandardMaterial({color:0xf4f1e5,roughness:.88});
+  const concrete=new THREE.MeshStandardMaterial({color:0xc7d4d3,roughness:.95});
+  const glass=new THREE.MeshStandardMaterial({color:0x5f9fb1,metalness:.18,roughness:.28,emissive:0x173945,emissiveIntensity:.12});
+  const roof=new THREE.MeshStandardMaterial({color,roughness:.82});
+  const dark=new THREE.MeshStandardMaterial({color:0x355b6b,roughness:.75});
+  function box(x,y,z,sx,sy,sz,mat){const m=new THREE.Mesh(new THREE.BoxGeometry(sx,sy,sz),mat);m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;g.add(m);return m}
+  if(index===0||index===3||index===6){
+    box(0,.52,0,1.22,.86,1.02,wall);box(0,1.0,0,1.3,.12,1.1,roof);
+    for(let i=0;i<4;i++)box(-.43+i*.28,.55,.516,.16,.34,.025,glass);
+    box(.22,.36,-.526,.32,.42,.025,dark);box(.22,.39,-.548,.22,.27,.012,concrete);
+    for(let i=0;i<3;i++)box(-.34+i*.28,.32,-.535,.17,.035,.018,roof);
+    const mast=new THREE.Mesh(new THREE.CylinderGeometry(.025,.04,.7,7),dark);mast.position.set(.48,1.35,-.25);g.add(mast);
+    const antenna=new THREE.Mesh(new THREE.SphereGeometry(.12,8,6),roof);antenna.scale.set(.7,1.2,.7);antenna.position.set(.48,1.7,-.25);g.add(antenna);
+  } else if(index===1||index===4){
+    box(-.16,.62,0,1.0,1.05,.92,wall);box(-.16,1.18,0,1.08,.1,1.0,roof);
+    for(let row=0;row<3;row++)for(let col=0;col<3;col++)box(-.49+col*.31,.48+row*.25,.468,.22,.16,.025,glass);
+    box(.62,.48,.05,.5,.78,.62,dark);box(.62,.89,.05,.53,.08,.65,roof);
+    for(let j=0;j<3;j++){box(.62,.3+j*.2,.37,.32,.035,.025,glass);box(.76,.3+j*.2,.39,.035,.035,.018,roof)}
+    box(-.16,.22,-.48,1.05,.08,.08,concrete);
+  } else {
+    box(0,.43,0,1.22,.68,.92,wall);box(0,.81,0,1.32,.12,1.02,roof);
+    box(-.23,.38,.468,.48,.48,.025,dark);box(-.23,.38,.49,.34,.34,.015,concrete);
+    box(.42,.45,.475,.28,.28,.025,glass);
+    box(.02,.18,-.49,.9,.12,.08,roof);
+    for(let j=0;j<3;j++){box(-.34+j*.28,.22,-.535,.13,.035,.018,j%2?dark:roof)}
+    const pole=new THREE.Mesh(new THREE.CylinderGeometry(.025,.04,.65,7),dark);pole.position.set(.75,1.1,-.2);g.add(pole);
+    const cross=new THREE.Mesh(new THREE.BoxGeometry(.42,.045,.045),roof);cross.position.set(.75,1.25,-.2);g.add(cross);
+  }
+  return g;
+}
+
+function makeIslandTheme(index,color){
+  const g=new THREE.Group(); const metal=new THREE.MeshStandardMaterial({color:0x718c98,roughness:.75});
+  const dark=new THREE.MeshStandardMaterial({color:0x355b6b,roughness:.72});
+  const light=new THREE.MeshStandardMaterial({color:0xdce9e7,roughness:.8});
+  const accent=new THREE.MeshStandardMaterial({color,roughness:.7});
+  function box(x,y,z,sx,sy,sz,mat){const m=new THREE.Mesh(new THREE.BoxGeometry(sx,sy,sz),mat);m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;g.add(m);return m}
+  function pole(x,z,h=1.2){const m=new THREE.Mesh(new THREE.CylinderGeometry(.035,.055,h,7),metal);m.position.set(x,h/2+.25,z);m.castShadow=true;g.add(m);return m}
+  function rack(x,z){box(x,.55,z,.38,.62,.36,dark);for(let j=0;j<3;j++){box(x,.34+j*.2,z+.19,.25,.035,.015,accent);box(x+.1,.34+j*.2,z+.205,.035,.035,.018,light)}}
+  if(index===0||index===3||index===6){ 
+    box(.95,.36,.65,.5,.28,.32,light);box(.95,.52,.65,.36,.05,.23,accent);
+    for(let i=0;i<3;i++)box(.82+i*.12,.58,.65,.045,.035,.035,dark);
+    if(index===3||index===6){rack(1.15,-.45);pole(-1.25,.65,.85);const dish=new THREE.Mesh(new THREE.SphereGeometry(.28,12,8,0,Math.PI,0,Math.PI),light);dish.position.set(-1.25,1.05,.65);dish.rotation.z=-.45;g.add(dish)}
+  } else if(index===1||index===4){
+    rack(.95,.58);rack(1.35,.58);box(-1.05,.42,.6,.48,.12,.34,accent);box(-1.05,.52,.6,.38,.04,.25,light);
+    for(let i=0;i<3;i++)box(-1.18+i*.13,.57,.6,.06,.025,.06,dark);
+  } else if(index===2||index===5){ 
+    pole(1.05,.55,1.55);for(let j=0;j<3;j++){const cross=box(1.05,.75+j*.34,.55,.72,.045,.045,accent);cross.rotation.z=(j%2?-.12:.12)}
+    const dish=new THREE.Mesh(new THREE.SphereGeometry(.26,12,8,0,Math.PI,0,Math.PI),light);dish.position.set(-1.12,.85,.55);dish.rotation.z=-.55;g.add(dish);
+    box(-1.1,.38,-.55,.42,.3,.3,accent);box(-1.1,.56,-.55,.3,.08,.22,metal);
+  }
+  if(index===0){ 
+    const handset=new THREE.Mesh(new THREE.TorusGeometry(.43,.095,10,28,Math.PI),accent);handset.rotation.z=Math.PI;handset.position.set(-1.02,.86,-.72);g.add(handset);
+    for(const x of [-1.45,-.59]){const tip=new THREE.Mesh(new THREE.SphereGeometry(.13,10,8),dark);tip.position.set(x,.86,-.72);g.add(tip)}
+    const ring=new THREE.Mesh(new THREE.TorusGeometry(.58,.025,6,28),light);ring.rotation.x=Math.PI/2;ring.position.set(-1.02,.48,-.72);g.add(ring);
+  } else if(index===1){
+    box(-1.02,.7,-.62,.56,.92,.48,accent);for(let r=0;r<3;r++)for(let c=0;c<2;c++)box(-1.2+c*.2,.48+r*.23,-.365,.11,.12,.025,light);
+    box(-1.02,1.22,-.62,.64,.08,.55,dark);
+  } else if(index===2){
+    box(-1.05,.95,-.62,.55,.24,.28,accent);const lens=new THREE.Mesh(new THREE.CylinderGeometry(.13,.13,.22,12),dark);lens.rotation.x=Math.PI/2;lens.position.set(-1.05,.95,-.82);g.add(lens);
+    const hood=new THREE.Mesh(new THREE.BoxGeometry(.66,.07,.36),metal);hood.position.set(-1.05,1.12,-.61);g.add(hood);
+    const mount=new THREE.Mesh(new THREE.CylinderGeometry(.045,.045,.34,8),dark);mount.position.set(-1.05,.68,-.62);g.add(mount);
+  } else if(index===3){
+    box(-1.02,.45,-.62,.82,.38,.48,accent);box(-.78,.68,-.62,.4,.25,.45,light);box(-.45,.48,-.62,.18,.2,.4,dark);
+    for(const x of [-1.28,-.72]){const wheel=new THREE.Mesh(new THREE.CylinderGeometry(.13,.13,.09,12),dark);wheel.rotation.z=Math.PI/2;wheel.position.set(x,.27,-.62);g.add(wheel)}
+    box(1.12,.36,-.55,.42,.28,.35,accent);box(1.12,.53,-.55,.46,.07,.38,light);
+  } else if(index===4){ 
+    box(-1.02,.57,-.62,.56,.78,.4,accent);for(let j=0;j<3;j++){box(-1.02,.38+j*.22,-.405,.43,.035,.025,light);box(-.84,.38+j*.22,-.43,.045,.045,.025,dark)}
+    box(1.08,.48,-.58,.52,.48,.42,light);box(1.08,.75,-.58,.56,.08,.46,accent);box(1.08,.55,-.35,.3,.07,.025,dark);
+  } else if(index===5){
+    rack(-1.02,-.58);const spool=new THREE.Mesh(new THREE.CylinderGeometry(.28,.28,.16,16),accent);spool.rotation.x=Math.PI/2;spool.position.set(1.05,.52,-.62);g.add(spool);
+    const hub=new THREE.Mesh(new THREE.CylinderGeometry(.09,.09,.19,12),dark);hub.rotation.x=Math.PI/2;hub.position.set(1.05,.52,-.62);g.add(hub);
+    box(1.05,.27,-.62,.5,.2,.36,light);
+  } else if(index===6){ 
+    rack(-1.05,-.58);rack(-.58,-.58);box(1.05,.4,-.58,.5,.32,.36,accent);box(1.05,.61,-.58,.54,.07,.4,light);
+    const handle=new THREE.Mesh(new THREE.TorusGeometry(.16,.035,7,16,Math.PI),dark);handle.position.set(1.05,.68,-.58);g.add(handle);
+  }
+  return g;
+}
+function labelSprite(text){const c=document.createElement('canvas');c.width=512;c.height=112;const ctx=c.getContext('2d');ctx.fillStyle='rgba(255,253,246,.95)';ctx.beginPath();ctx.roundRect(4,4,504,104,26);ctx.fill();ctx.strokeStyle='rgba(65,125,133,.22)';ctx.lineWidth=3;ctx.stroke();ctx.fillStyle='#234b5c';ctx.font='bold 27px system-ui,"Noto Sans TC",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text,256,56);const tex=new THREE.CanvasTexture(c);tex.colorSpace=THREE.SRGBColorSpace;const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthTest:false}));sp.scale.set(3.65,.76,1);sp.position.y=2.35;return sp}
+units.forEach((u,i)=>{const [x,_,z]=positions[i],g=new THREE.Group();g.position.set(x,0,z);g.userData.unitId=u.id;
+const islandSides=[8,6,7,9,4,8,7][i],islandYaw=[0,.18,.08,.28,.0,.2,.12][i];
+const shape=new THREE.CylinderGeometry(2.05,2.25,.65,islandSides,1);shape.rotateY(islandYaw);const rock=new THREE.Mesh(shape,new THREE.MeshStandardMaterial({color:[0xb9d9be,0xb7d5d8,0xb5d9c4,0xc5d0ad,0xc9c0dc,0xc4d5c9,0xb5d5cf][i],roughness:1}));rock.position.y=-.15;rock.castShadow=true;rock.receiveShadow=true;g.add(rock);
+const topGeo=new THREE.CylinderGeometry(1.98,2.05,.18,islandSides,1);topGeo.rotateY(islandYaw);const top=new THREE.Mesh(topGeo,new THREE.MeshStandardMaterial({color:u.color,roughness:.88}));top.position.y=.22;top.receiveShadow=true;g.add(top);
+const building=makeDepartmentBuilding(i,u.color);building.position.set(-.25,.12,.05);g.add(building);const theme=makeIslandTheme(i,u.color);theme.position.y=.22;g.add(theme);if(i===0||i===4)g.add(makeTree(-1.35,-.35,.68));else if(i===1||i===3||i===6)g.add(makeTree(.95,-.82,.55));else g.add(makeTree(-1.28,-.72,.5));const badge=new THREE.Mesh(new THREE.CylinderGeometry(.28,.28,.12,24),new THREE.MeshStandardMaterial({color:0xffffff}));badge.position.set(0,1.27,0);g.add(badge);const orb=new THREE.Mesh(new THREE.SphereGeometry(.17,16,12),new THREE.MeshStandardMaterial({color:0x4b9f9c,emissive:0x245c58,emissiveIntensity:.4}));orb.position.set(0,1.46,0);g.add(orb);g.add(labelSprite(`${u.name.split('｜')[0]}｜${u.short}`));islandGroup.add(g);islandMeshes.push({mesh:g,unit:u,orb,top});});
+
+const bridgeLinks=[[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[1,2],[2,3],[3,4],[4,5],[5,6],[6,1]];
+const bridgeMap={};
+
+function bridge(a,b){
+  const p1=new THREE.Vector3(...positions[a]),p2=new THREE.Vector3(...positions[b]);
+  const d=p2.clone().sub(p1); const dir=d.clone().normalize();
+  const angle=Math.atan2(d.x,d.z);
+  const start=p1.clone().add(dir.clone().multiplyScalar(2.22));start.y=.38;
+  const finish=p2.clone().add(dir.clone().multiplyScalar(-2.22));finish.y=.38;
+  const mid=start.clone().add(finish).multiplyScalar(.5);mid.y=1.02;
+  const curve=new THREE.QuadraticBezierCurve3(start,mid,finish);
+  
+  // 紀錄供尋路使用的橋樑曲線段
+  bridgeMap[`${a}-${b}`] = { curve, dir: 1, start, finish };
+  bridgeMap[`${b}-${a}`] = { curve, dir: -1, start: finish, finish: start };
+
+  const cloudMat=new THREE.MeshStandardMaterial({color:0xeaf7f7,transparent:true,opacity:.72,roughness:.28,metalness:.12,emissive:0x8bcbd1,emissiveIntensity:.32});
+  const glowMat=new THREE.MeshStandardMaterial({color:0xffe8b0,emissive:0xffc96a,emissiveIntensity:.75,metalness:.35,roughness:.3});
+  const deck=new THREE.Mesh(new THREE.TubeGeometry(curve,40,.16,10,false),cloudMat);islandGroup.add(deck);
+  
+  for(const side of [-1,1]){
+    const offset=new THREE.Vector3(Math.cos(angle)*side*.42,0,-Math.sin(angle)*side*.42);
+    const railCurve=new THREE.QuadraticBezierCurve3(start.clone().add(offset).setY(.78),mid.clone().add(offset).setY(1.48),finish.clone().add(offset).setY(.78));
+    const rail=new THREE.Mesh(new THREE.TubeGeometry(railCurve,36,.045,8,false),glowMat);islandGroup.add(rail);
+    for(let k=1;k<5;k++){
+      const u=k/5,pt=railCurve.getPoint(u);
+      const bead=new THREE.Mesh(new THREE.SphereGeometry(.075,10,8),glowMat);bead.position.copy(pt);islandGroup.add(bead);
+    }
+  }
+  [start,finish].forEach((pt,j)=>{
+    for(let k=0;k<3;k++){
+      const puff=new THREE.Mesh(new THREE.SphereGeometry(.22-k*.025,12,8),cloudMat);
+      puff.position.set(pt.x+(k-1)*.19,pt.y-.06+(k%2)*.04,pt.z+(j?-.08:.08));puff.scale.y=.62;islandGroup.add(puff);
+    }
+  });
+
+  // V21: 靜態發光裝飾踏雲。真正跟隨人物的是 w.cloudStep，避免多人相向交會時的衝突
+  for(let i=1; i<8; i++) {
+     const pt = curve.getPointAt(i/8);
+     const tang = curve.getTangentAt(i/8);
+     const step = new THREE.Mesh(new THREE.BoxGeometry(.38,.04,.28), new THREE.MeshStandardMaterial({color:0xf5fbfa, transparent:true, opacity:.25, emissive:0x5d9ea3, emissiveIntensity:.15}));
+     step.position.set(pt.x, pt.y + 0.08, pt.z);
+     step.rotation.y = Math.atan2(tang.x, tang.z);
+     step.rotation.x = -Math.atan2(tang.y, Math.sqrt(tang.x*tang.x + tang.z*tang.z));
+     islandGroup.add(step);
+  }
+}
+bridgeLinks.forEach(p=>bridge(...p));
+
+const signGroup=new THREE.Group();
+signGroup.position.set(0,0,-9.2); islandGroup.add(signGroup);
+const signMetal=new THREE.MeshStandardMaterial({color:0x263f4b,metalness:.72,roughness:.28});
+const signPostMat=new THREE.MeshStandardMaterial({color:0x6d8790,metalness:.68,roughness:.3});
+const postL=new THREE.Mesh(new THREE.BoxGeometry(.16,3.05,.18),signPostMat);postL.position.set(-2.12,1.90,0);signGroup.add(postL);
+const postR=postL.clone();postR.position.x=2.12;signGroup.add(postR);
+const footL=new THREE.Mesh(new THREE.BoxGeometry(.65,.12,.48),signMetal);footL.position.set(-2.12,.4,0);signGroup.add(footL);
+const footR=footL.clone();footR.position.x=2.12;signGroup.add(footR);
+const signBoard=new THREE.Mesh(new THREE.BoxGeometry(5.1,1.62,.22),new THREE.MeshStandardMaterial({color:0x082d42,metalness:.38,roughness:.22,emissive:0x07354b,emissiveIntensity:.5}));signBoard.position.set(0,3.25,0);signGroup.add(signBoard);
+const frameMat=new THREE.MeshStandardMaterial({color:0x70f4ff,emissive:0x16dfff,emissiveIntensity:1.8,metalness:.3,roughness:.2});
+function signBar(w,h,x,y,z){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,.055),frameMat);m.position.set(x,y,z);signGroup.add(m);return m}
+signBar(5.25,.07,0,4.09,.13);signBar(5.25,.07,0,2.41,.13);signBar(.07,1.68,-2.59,3.25,.13);signBar(.07,1.68,2.59,3.25,.13);
+const signCanvas=document.createElement('canvas');signCanvas.width=1200;signCanvas.height=360;const signCtx=signCanvas.getContext('2d');
+signCtx.fillStyle='#06263b';signCtx.fillRect(0,0,1200,360);
+const signGrad=signCtx.createLinearGradient(0,0,1200,360);signGrad.addColorStop(0,'#124d6a');signGrad.addColorStop(.5,'#071f3a');signGrad.addColorStop(1,'#184b68');signCtx.fillStyle=signGrad;signCtx.fillRect(8,8,1184,344);
+signCtx.textAlign='center';signCtx.textBaseline='middle';signCtx.lineJoin='round';signCtx.shadowColor='#56f5ff';signCtx.shadowBlur=18;signCtx.fillStyle='#d9ffff';signCtx.font='bold 96px system-ui,"Noto Sans TC",sans-serif';signCtx.fillText('台北營運處',600,105);signCtx.shadowBlur=22;signCtx.fillStyle='#fff4a6';signCtx.font='bold 112px system-ui,"Noto Sans TC",sans-serif';signCtx.strokeStyle='#102b3b';signCtx.lineWidth=8;signCtx.strokeText('資通科',600,252);signCtx.fillText('資通科',600,252);signCtx.shadowBlur=0;
+const signTexture=new THREE.CanvasTexture(signCanvas);signTexture.colorSpace=THREE.SRGBColorSpace;
+const signFace=new THREE.Mesh(new THREE.PlaneGeometry(4.98,1.50),new THREE.MeshBasicMaterial({map:signTexture,depthTest:false}));signFace.position.set(0,3.25,.19);signGroup.add(signFace);
+const beaconMat=new THREE.MeshStandardMaterial({color:0xffffff,emissive:0x7df8ff,emissiveIntensity:2.5});const signBeacons=[];
+for(let i=0;i<10;i++){const b=new THREE.Mesh(new THREE.SphereGeometry(.075,12,10),beaconMat.clone());b.position.set(-2.3+i*.51,4.18,.19);signGroup.add(b);signBeacons.push(b)}
+const signGlow=new THREE.PointLight(0x39eaff,3.2,8);signGlow.position.set(0,3.4,.65);signGroup.add(signGlow);
+
+function tinyRoleLabel(text){
+  const c=document.createElement('canvas'); c.width=320; c.height=64;
+  const ctx=c.getContext('2d'); ctx.fillStyle='rgba(255,253,246,.96)';
+  ctx.beginPath(); ctx.roundRect(3,3,314,58,18); ctx.fill();
+  ctx.strokeStyle='rgba(51,102,112,.28)'; ctx.lineWidth=2; ctx.stroke();
+  ctx.fillStyle='#234b5c'; ctx.font='bold 27px system-ui,"Noto Sans TC",sans-serif';
+  ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(text,160,32);
+  const tex=new THREE.CanvasTexture(c); tex.colorSpace=THREE.SRGBColorSpace;
+  const sprite=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthTest:false}));
+  sprite.scale.set(1.42,.285,1); sprite.position.y=1.22; return sprite;
+}
+function makeWalker(role,color){
+  const g=new THREE.Group();
+  const mat=(c,roughness=.78,metalness=0)=>new THREE.MeshStandardMaterial({color:c,roughness,metalness});
+  const skin=mat(0xf0bd98), hair=mat(0x352a26), jacket=mat(0xff791f,.62), yellow=mat(0xffd63e,.48), reflective=mat(0xf1f4ed,.35,.12), pants=mat(0x304b5b), boots=mat(0x202c32), seam=mat(0x1c4b59);
+  const head=new THREE.Mesh(new THREE.SphereGeometry(.112,16,12),skin);head.position.set(0,.79,0);head.castShadow=true;g.add(head);
+  const hairCap=new THREE.Mesh(new THREE.SphereGeometry(.118,16,10,0,Math.PI*2,0,Math.PI*.58),hair);hairCap.position.set(0,.83,-.005);g.add(hairCap);
+  const fringe=new THREE.Mesh(new THREE.SphereGeometry(.09,12,8,0,Math.PI,0,Math.PI*.55),hair);fringe.position.set(0,.845,.055);fringe.rotation.x=-.18;g.add(fringe);
+  for(const x of [-.041,.041]){const eye=new THREE.Mesh(new THREE.SphereGeometry(.012,8,6),mat(0x20272b,.35));eye.position.set(x,.795,.101);g.add(eye);const brow=new THREE.Mesh(new THREE.BoxGeometry(.03,.008,.008),hair);brow.position.set(x,.817,.102);brow.rotation.z=x<0?-.08:.08;g.add(brow)}
+  const nose=new THREE.Mesh(new THREE.SphereGeometry(.012,8,6),skin);nose.scale.set(.7,.8,.7);nose.position.set(0,.775,.112);g.add(nose);
+  const mouth=new THREE.Mesh(new THREE.BoxGeometry(.035,.006,.006),mat(0x8b5143));mouth.position.set(0,.754,.106);g.add(mouth);
+  const blushMat=mat(0xf58f91,.55);
+  for(const x of [-.073,.073]){const cheek=new THREE.Mesh(new THREE.SphereGeometry(.022,10,8),blushMat);cheek.scale.set(1,.62,.28);cheek.position.set(x,.772,.089);g.add(cheek)}
+  const helmet=mat(0xffd447,.45);const hatTop=new THREE.Mesh(new THREE.SphereGeometry(.12,14,8,0,Math.PI*2,0,Math.PI*.42),helmet);hatTop.position.set(0,.878,0);g.add(hatTop);
+  const hatBrim=new THREE.Mesh(new THREE.CylinderGeometry(.137,.137,.018,18),helmet);hatBrim.position.set(0,.855,0);g.add(hatBrim);
+  const torso=new THREE.Mesh(new THREE.BoxGeometry(.235,.27,.13),jacket);torso.position.set(0,.51,0);torso.castShadow=true;g.add(torso);
+  const zipper=new THREE.Mesh(new THREE.BoxGeometry(.009,.23,.008),seam);zipper.position.set(0,.51,.069);g.add(zipper);
+  for(const x of [-.067,.067]){const band=new THREE.Mesh(new THREE.BoxGeometry(.027,.245,.009),reflective);band.position.set(x,.515,.071);g.add(band);const pocket=new THREE.Mesh(new THREE.BoxGeometry(.045,.045,.009),mat(0xe96719));pocket.position.set(x*.7,.555,.074);g.add(pocket)}
+  const chestBand=new THREE.Mesh(new THREE.BoxGeometry(.23,.028,.01),reflective);chestBand.position.set(0,.445,.071);g.add(chestBand);
+  const backBand=new THREE.Mesh(new THREE.BoxGeometry(.23,.03,.009),reflective);backBand.position.set(0,.49,-.069);g.add(backBand);
+  for(const x of [-.066,.066]){const backVertical=new THREE.Mesh(new THREE.BoxGeometry(.025,.23,.009),reflective);backVertical.position.set(x,.515,-.069);g.add(backVertical)}
+  const arms=[],legs=[];
+  for(const side of [-1,1]){
+    const upper=new THREE.Mesh(new THREE.CapsuleGeometry(.038,.105,3,8),jacket);upper.position.set(side*.155,.535,0);upper.rotation.z=side*.18;upper.castShadow=true;g.add(upper);arms.push(upper);
+    const cuff=new THREE.Mesh(new THREE.CylinderGeometry(.037,.037,.035,10),reflective);cuff.position.set(side*.17,.435,0);cuff.rotation.z=Math.PI/2;g.add(cuff);
+    const hand=new THREE.Mesh(new THREE.SphereGeometry(.032,8,6),skin);hand.position.set(side*.18,.405,0);g.add(hand);
+    const leg=new THREE.Mesh(new THREE.CapsuleGeometry(.045,.17,3,8),pants);leg.position.set(side*.058,.245,0);leg.castShadow=true;g.add(leg);legs.push(leg);
+    const trouserBand=new THREE.Mesh(new THREE.CylinderGeometry(.046,.046,.025,10),reflective);trouserBand.position.set(side*.058,.17,0);g.add(trouserBand);
+    const boot=new THREE.Mesh(new THREE.BoxGeometry(.09,.065,.14),boots);boot.position.set(side*.058,.105,.025);boot.castShadow=true;g.add(boot);
+  }
+  const collar=new THREE.Mesh(new THREE.BoxGeometry(.09,.035,.14),yellow);collar.position.set(0,.655,0);g.add(collar);
+  const belt=new THREE.Mesh(new THREE.BoxGeometry(.22,.025,.14),mat(0x263a40));belt.position.set(0,.365,0);g.add(belt);
+  const badge=new THREE.Mesh(new THREE.BoxGeometry(.045,.035,.012),mat(0xffe7a0));badge.position.set(-.045,.56,.079);g.add(badge);
+  g.add(tinyRoleLabel(role));g.userData.walkParts={arms,legs};return g;
+}
+
+function makeNimbusCloud(){
+  const carpet=new THREE.Group();
+  const rugMat=new THREE.MeshStandardMaterial({color:0x7b315e,roughness:.82,metalness:.04,emissive:0x321027,emissiveIntensity:.12,side:THREE.DoubleSide});
+  const goldMat=new THREE.MeshStandardMaterial({color:0xffd477,roughness:.48,metalness:.35,emissive:0x9c5b18,emissiveIntensity:.18});
+  const tealMat=new THREE.MeshStandardMaterial({color:0x42b8b0,roughness:.72,metalness:.06,emissive:0x145d5a,emissiveIntensity:.12});
+  const creamMat=new THREE.MeshStandardMaterial({color:0xffedc4,roughness:.8,emissive:0x8c7445,emissiveIntensity:.08});
+  const body=new THREE.Mesh(new THREE.BoxGeometry(.94,.075,.68,1,1,1),rugMat);body.position.y=0;body.castShadow=true;body.receiveShadow=true;carpet.add(body);
+  for(const y of [.041,-.041]){
+    const w=.92,d=.66,t=.018;
+    for(const z of [-d/2,d/2]){const edge=new THREE.Mesh(new THREE.BoxGeometry(w,.012,t),goldMat);edge.position.set(0,y,z);carpet.add(edge)}
+    for(const x of [-w/2,w/2]){const edge=new THREE.Mesh(new THREE.BoxGeometry(t,.012,d),goldMat);edge.position.set(x,y,0);carpet.add(edge)}
+  }
+  const band=new THREE.Mesh(new THREE.BoxGeometry(.57,.009,.018),goldMat);band.position.set(0,.044,0);carpet.add(band);
+  for(const x of [-.29,-.145,0,.145,.29]){
+    const diamond=new THREE.Mesh(new THREE.OctahedronGeometry(.052,0),x===0?creamMat:tealMat);diamond.scale.set(1,.18,1);diamond.position.set(x,.052,0);carpet.add(diamond);
+  }
+  for(const z of [-.22,.22])for(const x of [-.29,.29]){
+    const motif=new THREE.Mesh(new THREE.OctahedronGeometry(.045,0),goldMat);motif.scale.set(1,.2,1);motif.position.set(x,.052,z);carpet.add(motif);
+  }
+  const tassels=[];
+  for(const x of [-.43,.43])for(const z of [-.30,.30]){
+    const knot=new THREE.Mesh(new THREE.SphereGeometry(.027,10,8),goldMat);knot.position.set(x,-.005,z);carpet.add(knot);
+    const tassel=new THREE.Group();tassel.position.set(x,-.015,z);carpet.add(tassel);
+    const thread=new THREE.Mesh(new THREE.CylinderGeometry(.012,.02,.13,8),tealMat);thread.position.y=-.065;thread.rotation.z=x<0?-.12:.12;tassel.add(thread);
+    const tip=new THREE.Mesh(new THREE.SphereGeometry(.022,8,6),creamMat);tip.position.y=-.13;tassel.add(tip);tassels.push(tassel);
+  }
+  for(const [x,y,z] of [[-.53,.09,.12],[.53,.09,-.12],[0,.13,-.39]]){const star=new THREE.Mesh(new THREE.OctahedronGeometry(.035,0),goldMat);star.position.set(x,y,z);carpet.add(star)}
+  carpet.position.set(0,-.13,0);
+  carpet.scale.set(1.65,1.28,1.65);carpet.userData.tassels=tassels;return carpet;
+}
+
+// 建立專屬個人踏雲
+function createCloudStep() {
+    const step = new THREE.Mesh(
+        new THREE.BoxGeometry(.46,.075,.38),
+        new THREE.MeshStandardMaterial({color: 0xffedc8, transparent:true, opacity:.94, metalness:.12, roughness:.38, emissive: 0x5d9ea3, emissiveIntensity:.35})
+    );
+    step.visible = false; // 預設隱藏，僅在上橋時顯示
+    islandGroup.add(step);
+    return step;
+}
+
+const walkers=[];
+const walkerSpecs=[
+  {island:6,role:'科長｜統籌一至七股',color:0x2f7181,phase:0.2,r:1.05,speed:.42}
+]
+walkerSpecs.forEach((spec,i)=>{
+  const [cx,,cz]=positions[spec.island]; const model=makeWalker(spec.role,spec.color); model.userData.person={name:'科長',role:'統籌一股至七股',description:'科長為一股至七股的共同主管，乘著飛天魔毯在空中巡查各島，負責整體方向、資源配置、跨股協調、重要事項決策與工作進度追蹤。',unitId:'all'}; model.userData.unitId='all';model.userData.isChief=true;
+  const nimbus=makeNimbusCloud();model.add(nimbus);model.userData.nimbus=nimbus;
+  model.position.set(cx+Math.cos(spec.phase)*spec.r,1.48,cz+Math.sin(spec.phase)*spec.r);
+  islandGroup.add(model);
+  const taskSprite=labelSprite(''); taskSprite.scale.set(2.6,.52,1); taskSprite.position.y=1.65; taskSprite.visible=false; model.add(taskSprite);
+  const cloudStep = createCloudStep();
+  walkers.push({...spec,model,cx,cz,baseY: model.userData.isChief ? 1.48 : .34,offset:i*.7,taskSprite,routeSegments:null,routeIndex:0,routeProgress:0,task:null,homeIsland:spec.island,cloudStep});
+});
+
+const adjacency=Array.from({length:units.length},()=>[]);bridgeLinks.forEach(([a,b])=>{adjacency[a].push(b);adjacency[b].push(a)});
+function islandPoint(i){const [x,,z]=positions[i];return new THREE.Vector3(x,.34,z)}
+function shortestPath(from,to){const q=[from],prev=Array(units.length).fill(-1);prev[from]=from;while(q.length){const n=q.shift();if(n===to)break;for(const k of adjacency[n])if(prev[k]===-1){prev[k]=n;q.push(k)}}if(prev[to]===-1)return [from,to];const path=[];for(let n=to;n!==from;n=prev[n])path.unshift(n);path.unshift(from);return path}
+
+// V21 核心：將尋路轉換為「平地直線 (line)」與「過橋曲線 (bridge)」的路段組合
+function setRoute(w, islandIndices, task=null) {
+  w.routeSegments = [];
+  let curPt = w.model.position.clone();
+  const isChief = w.model.userData.isChief;
+  curPt.y = isChief ? 1.48 : 0.34;
+
+  for(let i=0; i<islandIndices.length - 1; i++) {
+    const fromIdx = islandIndices[i];
+    const toIdx = islandIndices[i+1];
+    
+    if (isChief) {
+        // 科長直線飛行，不受橋樑曲線拘束
+        const nextPt = islandPoint(toIdx);
+        nextPt.y = 1.48;
+        w.routeSegments.push({ type: 'line', p1: curPt, p2: nextPt });
+        curPt = nextPt;
+    } else {
+        const b = bridgeMap[`${fromIdx}-${toIdx}`];
+        if (b) {
+            // 平地走到橋頭
+            if(curPt.distanceTo(b.start) > 0.05) {
+                w.routeSegments.push({ type: 'line', p1: curPt, p2: b.start });
+            }
+            // 沿曲線過橋
+            w.routeSegments.push({ type: 'bridge', curve: b.curve, dir: b.dir, p1: b.start, p2: b.finish, length: b.curve.getLength() });
+            curPt = b.finish;
+        } else {
+            // 例外防護
+            const nextPt = islandPoint(toIdx);
+            w.routeSegments.push({ type: 'line', p1: curPt, p2: nextPt });
+            curPt = nextPt;
+        }
+    }
+  }
+
+  let finalDest;
+  if (task) {
+      const [cx, , cz] = positions[islandIndices[islandIndices.length-1]];
+      finalDest = new THREE.Vector3(cx - 0.4, isChief ? 1.48 : 0.34, cz + 0.4);
+  } else {
+      const phase = Math.random() * Math.PI * 2;
+      const r = 1.18 + Math.random() * 0.25;
+      const [cx, , cz] = positions[islandIndices[islandIndices.length-1]];
+      finalDest = new THREE.Vector3(cx + Math.cos(phase)*r, isChief ? 1.48 : 0.34, cz + Math.sin(phase)*r);
+  }
+  
+  if(curPt.distanceTo(finalDest) > 0.05) {
+      w.routeSegments.push({ type: 'line', p1: curPt, p2: finalDest });
+  }
+
+  w.routeIndex = 0;
+  w.routeProgress = 0;
+  w.task = task;
+  if(task) {
+      w.taskSprite.visible = true;
+      setSpriteText(w.taskSprite, task.title);
+  } else {
+      w.taskSprite.visible = false;
+  }
+}
+
+function setSpriteText(sprite,text){const old=sprite.material.map;const c=document.createElement('canvas');c.width=640;c.height=110;const ctx=c.getContext('2d');ctx.fillStyle='rgba(255,253,246,.97)';ctx.beginPath();ctx.roundRect(3,3,634,104,24);ctx.fill();ctx.strokeStyle='rgba(51,102,112,.35)';ctx.lineWidth=3;ctx.stroke();ctx.fillStyle='#234b5c';ctx.font='bold 30px system-ui,"Noto Sans TC",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(String(text||'工作中').slice(0,28),320,55);const tex=new THREE.CanvasTexture(c);tex.colorSpace=THREE.SRGBColorSpace;sprite.material.map=tex;sprite.material.needsUpdate=true;if(old)old.dispose()}
+function dispatchEngineer(unitIndex,event){const candidates=walkers.filter(w=>(w.person?.role||w.role||'').includes('工程師'));if(!candidates.length){showToast('事件已建立；目前沒有工程師人員可自動派工');return;}const engineer=candidates.reduce((best,w)=>{const a=shortestPath(w.homeIsland,unitIndex).length,b=shortestPath(best.homeIsland,unitIndex).length;return a<b?w:best},candidates[0]);let nearestIdx=0,bestDist=Infinity;positions.forEach((p,i)=>{const d=Math.hypot(engineer.model.position.x-p[0],engineer.model.position.z-p[2]);if(d<bestDist){bestDist=d;nearestIdx=i}});const islands=shortestPath(nearestIdx,unitIndex);setRoute(engineer,islands,{title:'處理：'+event.title,unitIndex,eventId:event.createdAt});showToast(engineer.role+' 正前往 '+units[unitIndex].short+' 處理工作');}
+function startPatrol(w){
+  let nearestIdx=0,bestDist=Infinity;positions.forEach((p,i)=>{const d=Math.hypot(w.model.position.x-p[0],w.model.position.z-p[2]);if(d<bestDist){bestDist=d;nearestIdx=i}});
+  const neighbors=adjacency[nearestIdx];
+  const targetIdx=neighbors[(Math.floor(w.offset*10)+Math.floor(performance.now()/9000))%neighbors.length] ?? nearestIdx;
+  const outward=shortestPath(nearestIdx,targetIdx);
+  const back=shortestPath(targetIdx,nearestIdx).slice(1);
+  setRoute(w, [...outward, ...back]);
+}
+
+function addPersonWalker(unitIndex, person){
+  const role=person.role||'同仁';
+  const color=role.includes('工程師')?0x5d8192:role.includes('股長')?0x5599a0:0x8c9b72;
+  const phase=Math.random()*Math.PI*2, r=1.18+Math.random()*.25;
+  const [cx,,cz]=positions[unitIndex];
+  const model=makeWalker(person.name,color); model.scale.setScalar(.92);
+  model.position.set(cx+Math.cos(phase)*r,.34,cz+Math.sin(phase)*r);
+  model.userData.person=person; model.userData.unitId=units[unitIndex].id; islandGroup.add(model);
+  const taskSprite=labelSprite(''); taskSprite.scale.set(2.6,.52,1); taskSprite.position.y=1.65; taskSprite.visible=false; model.add(taskSprite);
+  const cloudStep = createCloudStep();
+  const w={island:unitIndex,role:person.name,color,phase,r,speed:.42+Math.random()*.18,model,cx,cz,baseY:.34,offset:Math.random()*10,taskSprite,routeSegments:null,routeIndex:0,routeProgress:0,task:null,homeIsland:unitIndex,person,cloudStep};
+  walkers.push(w); startPatrol(w); return w;
+}
+
+units.forEach((u,i)=>data[u.id].people.forEach(p=>{if(!p.walkerId)p.walkerId='p-'+Math.random().toString(36).slice(2,10);if(!walkers.some(w=>w.person&&w.person.walkerId===p.walkerId))addPersonWalker(i,p)}));
+
+const clouds=new THREE.Group();scene.add(clouds);for(let i=0;i<18;i++){const m=new THREE.Mesh(new THREE.SphereGeometry(.06+Math.random()*.12,8,6),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.5}));m.position.set((Math.random()-.5)*24,1+Math.random()*4,(Math.random()-.5)*20);clouds.add(m)}
+const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();let downAt=null;renderer.domElement.addEventListener('pointerdown',e=>downAt={x:e.clientX,y:e.clientY});renderer.domElement.addEventListener('pointerup',e=>{if(!downAt||Math.hypot(e.clientX-downAt.x,e.clientY-downAt.y)>5)return;const r=canvas.getBoundingClientRect();pointer.x=((e.clientX-r.left)/r.width)*2-1;pointer.y=-((e.clientY-r.top)/r.height)*2+1;raycaster.setFromCamera(pointer,camera);const personHits=raycaster.intersectObjects(walkers.map(w=>w.model),true);if(personHits.length){let obj=personHits[0].object;while(obj&&!obj.userData.person)obj=obj.parent;if(obj&&obj.userData.person){showPersonDetail(obj.userData.person);downAt=null;return}}const hits=raycaster.intersectObjects(islandMeshes.map(o=>o.mesh),true);if(hits.length){let obj=hits[0].object;while(obj&&!obj.userData.unitId)obj=obj.parent;if(obj)selectUnit(obj.userData.unitId)}downAt=null});
+function save(){localStorage.setItem('cht-org-islands-v1',JSON.stringify(data));renderUI()}function countPeople(){return units.reduce((n,u)=>n+data[u.id].people.length,0)}function countEvents(){return units.reduce((n,u)=>n+data[u.id].events.length,0)}
+const unitTasks={u1:['PBX／IP Centrex 產品與方案規劃','需求訪談、規格確認與設計審查','跨單位工程協調與技術支援'],u2:['IMO／OA 系統需求與架構規劃','辦公系統整合、設備規格與測試','專案進度及維運協調'],u3:['弱電工程現場需求評估與設計','施工介面、管線及設備規格協調','工程品質與技術文件確認'],u4:['PBX／IP Centrex 設備裝機與設定','測試驗收、障礙排除及維護','服務紀錄與用戶需求追蹤'],u5:['IMO／OA 設備及系統管理','採購、資產、權限與資安協調','系統維護及使用者支援'],u6:['弱電設備現場安裝及測試','定期維護、故障排除與工程回報','施工品質與技術訓練'],u7:['PBX／IP Centrex 裝機與維護','用戶端障礙處理及設備汰換協調','維運紀錄與服務品質追蹤']};
+function showUnitDetail(id){const u=units.find(x=>x.id===id);if(!u)return;document.querySelector('#unitArt').textContent=u.icon;document.querySelector('#unitArt').style.background=`linear-gradient(145deg, #fff8e9, ${new THREE.Color(u.color).getStyle()})`;document.querySelector('#unitModalTitle').textContent=u.name.split('｜')[0];document.querySelector('#unitModalSubtitle').textContent=u.name.split('｜')[1];document.querySelector('#unitModalDesc').textContent=u.desc;document.querySelector('#unitModalTasks').innerHTML=(unitTasks[id]||[]).map(t=>`<li>${esc(t)}</li>`).join('');document.querySelector('#unitDetail').dataset.unitId=id;document.querySelector('#unitDetail').classList.add('open')}
+function closeUnitDetail(){document.querySelector('#unitDetail').classList.remove('open')}document.querySelector('#closeUnitDetail').onclick=closeUnitDetail;document.querySelector('#closeUnitDetail2').onclick=closeUnitDetail;document.querySelector('#unitDetail').addEventListener('click',e=>{if(e.target.id==='unitDetail')closeUnitDetail()});document.querySelector('#unitModalSelect').onclick=()=>{const id=document.querySelector('#unitDetail').dataset.unitId;closeUnitDetail();selected=id;renderUI()};
+function selectUnit(id){selected=id;renderUI();const item=islandMeshes.find(o=>o.unit.id===id);if(item){controls.target.set(item.mesh.position.x,.4,item.mesh.position.z);showUnitDetail(id)}}
+function renderUI(){document.querySelector('#unitCount').textContent=units.length;document.querySelector('#peopleCount').textContent=countPeople();document.querySelector('#eventCount').textContent=countEvents();const list=document.querySelector('#islandList'),tabs=document.querySelector('#mobileTabs');list.innerHTML='';tabs.innerHTML='';units.forEach(u=>{const d=data[u.id],b=document.createElement('button');b.className='island-item '+(selected===u.id?'active':'');b.innerHTML=`<span class="island-dot" style="background:${new THREE.Color(u.color).getStyle()}">${u.icon}</span><span class="grow"><strong>${u.short}</strong><small>${u.name.split('｜')[1]}</small></span><span class="count">${d.people.length+d.events.length}</span>`;b.onclick=()=>selectUnit(u.id);list.appendChild(b);const t=document.createElement('button');t.className=selected===u.id?'':'secondary';t.textContent=u.short;t.onclick=()=>selectUnit(u.id);tabs.appendChild(t)});
+const u=units.find(x=>x.id===selected),d=data[selected];document.querySelector('#unitDetails').innerHTML=`<div class="panel-card"><span class="pill">${u.icon} 組織單位</span><h3 style="margin-top:9px">${u.name}</h3><p>${u.desc}</p><small style="color:#6e8b92">目前 ${d.people.length} 位人員・${d.events.length} 項事件</small></div>`;
+const people=document.querySelector('#peopleList');people.innerHTML=d.people.length?d.people.map((p,i)=>`<div class="person-row" data-open-person="${i}" title="點擊查看詳細資料"><div class="avatar">👤</div><div class="grow"><strong>${esc(p.name)}</strong><small>${esc(p.role||'尚未設定職務')} · 點擊查看</small></div><button class="danger" data-person="${i}" style="padding:6px 9px;font-size:11px">移除</button></div>`).join(''):'<div class="empty">這座島還沒有登錄人員</div>';
+const events=document.querySelector('#eventsList');events.innerHTML=d.events.length?d.events.map((e,i)=>`<div class="event-row"><div class="avatar">📌</div><div class="grow"><strong>${esc(e.title)}</strong><small>${esc(e.date||'未設定日期')} · ${esc(e.status)}</small>${e.note?`<p style="margin:5px 0 0;font-size:12px">${esc(e.note)}</p>`:''}</div><button class="danger" data-event="${i}" style="padding:6px 9px;font-size:11px">刪除</button></div>`).join(''):'<div class="empty">尚無工作事件，新增一筆開始追蹤</div>';
+people.querySelectorAll('[data-open-person]').forEach(row=>row.onclick=e=>{if(e.target.closest('[data-person]'))return;showPersonDetail(data[selected].people[+row.dataset.openPerson])});people.querySelectorAll('[data-person]').forEach(btn=>btn.onclick=e=>{e.stopPropagation();const p=data[selected].people[+btn.dataset.person];if(p&&p.walkerId){const wi=walkers.findIndex(w=>w.person&&w.person.walkerId===p.walkerId);if(wi>=0){islandGroup.remove(walkers[wi].model);if(walkers[wi].cloudStep)islandGroup.remove(walkers[wi].cloudStep);walkers.splice(wi,1)}}data[selected].people.splice(+btn.dataset.person,1);save();showToast('已移除人員')});events.querySelectorAll('[data-event]').forEach(btn=>btn.onclick=()=>{data[selected].events.splice(+btn.dataset.event,1);save();showToast('已刪除事件')});islandMeshes.forEach(o=>{const active=o.unit.id===selected;o.mesh.scale.setScalar(active?1.06:1);o.orb.material.color.set(active?0xff977b:0x4b9f9c);o.orb.scale.setScalar(active?1.3:1)});
+}
+function showPersonDetail(p){if(!p)return;const unit=units.find(u=>(data[u.id]?.people||[]).some(x=>x===p))||units.find(u=>u.id===p.unitId);document.querySelector('#detailName').textContent=p.name||'未命名人員';document.querySelector('#detailRole').textContent=p.role||'尚未設定職務';document.querySelector('#detailBody').textContent='所屬單位：'+(unit?unit.name:'未指定')+'\n\n詳細說明：\n'+(p.description||'尚未填寫詳細說明。可在新增人員時補充專長、負責工作與備註。')+'\n\n建立時間：'+(p.createdAt?new Date(p.createdAt).toLocaleString('zh-TW'):'未提供');document.querySelector('#personDetail').classList.add('open')}document.querySelector('#closePersonDetail').onclick=()=>document.querySelector('#personDetail').classList.remove('open');document.querySelector('#personDetail').addEventListener('click',e=>{if(e.target.id==='personDetail')e.currentTarget.classList.remove('open')});
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}let toastTimer;function showToast(s){const el=document.querySelector('#toast');el.textContent=s;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),1800)}
+document.querySelector('#personForm').addEventListener('submit',e=>{e.preventDefault();const name=document.querySelector('#personName').value.trim();if(!name)return;const person={name,role:document.querySelector('#personRole').value.trim(),description:document.querySelector('#personDesc').value.trim(),createdAt:new Date().toISOString(),walkerId:'p-'+Math.random().toString(36).slice(2,10)};data[selected].people.push(person);addPersonWalker(units.findIndex(u=>u.id===selected),person);e.target.reset();save();showToast('新夥伴已加入島嶼並開始巡走')});
+document.querySelector('#eventForm').addEventListener('submit',e=>{e.preventDefault();const title=document.querySelector('#eventTitle').value.trim();if(!title)return;const event={title,date:document.querySelector('#eventDate').value,status:document.querySelector('#eventStatus').value,note:document.querySelector('#eventNote').value.trim(),createdAt:new Date().toISOString()};data[selected].events.push(event);e.target.reset();save();dispatchEngineer(units.findIndex(u=>u.id===selected),event);showToast('工作事件已建立，工程師出發中')});
+document.querySelector('#exportBtn').onclick=()=>{const blob=new Blob([JSON.stringify({title:'中華電信台北營運處資通科組織群島',exportedAt:new Date().toISOString(),units:units.map(u=>({...u,...data[u.id]}))},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='cht-org-islands.json';a.click();URL.revokeObjectURL(a.href);showToast('已匯出 JSON 備份')};document.querySelector('#resetView').onclick=()=>{camera.position.set(0,23,34);controls.target.set(0,1,0);controls.update()};
+function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}new ResizeObserver(resize).observe(canvas);resize();renderUI();
+const clock=new THREE.Clock();function animate(){requestAnimationFrame(animate);const t=clock.getElapsedTime();
+  const flash=.55+.45*(.5+.5*Math.sin(t*5.2));frameMat.emissiveIntensity=1.0+2.1*flash;signBoard.material.emissiveIntensity=.25+.65*flash;signGlow.intensity=1.2+3.4*flash;signBeacons.forEach((b,i)=>{b.material.emissiveIntensity=.45+3.5*(.5+.5*Math.sin(t*7-i*.8));b.scale.setScalar(.8+.35*(.5+.5*Math.sin(t*7-i*.8)))});
+  
+  islandMeshes.forEach((o,i)=>{o.orb.position.y=1.46+Math.sin(t*1.5+i)*.08});
+  
+  walkers.forEach(w=>{
+    if(w.model.userData.isChief&&w.model.userData.nimbus){
+      const cloud=w.model.userData.nimbus;cloud.position.y=-.13+Math.sin(t*3.2+w.offset)*.075;cloud.rotation.z=Math.sin(t*1.7+w.offset)*.045;
+      cloud.children.forEach((part,i)=>{if(part.geometry&&part.geometry.type==='OctahedronGeometry'){part.rotation.y=t*1.1+i;part.position.y=(i===2?.13:.09)+Math.sin(t*2.6+i)*.018}});(cloud.userData.tassels||[]).forEach((q,i)=>{q.rotation.x=Math.sin(t*4+i)*.16;q.rotation.z=Math.cos(t*3.3+i)*.12});
+      const arms=w.model.userData.walkParts.arms;arms[0].rotation.x=-.18+Math.sin(t*2.2)*.07;arms[1].rotation.x=-.18-Math.sin(t*2.2)*.07;
+    }
+    
+    if(w.nextPause===undefined){w.nextPause=t+7+Math.random()*8;w.pauseStart=-1;w.pauseDuration=1.35+Math.random()*.65;w.pauseFacing=0;w.pauseTurn=0;}
+    if((!w.routeSegments||w.routeSegments.length===0)&&!w.task) startPatrol(w);
+    
+    if(w.routeSegments && w.routeIndex < w.routeSegments.length){
+      const seg=w.routeSegments[w.routeIndex];
+      const isChief=w.model.userData.isChief;
+      const canPause = seg.type==='line' && !w.task && !isChief; 
+
+      if(canPause && t>=w.nextPause && w.pauseStart<0){
+          w.pauseStart=t;w.pauseFacing=w.model.rotation.y;w.pauseDuration=1.35+Math.random()*.65;w.pauseTurn=(Math.random()<.5?-1:1)*(Math.PI*.78);w.nextPause=t+10+Math.random()*12;
+      }
+      
+      const paused = w.pauseStart>=0 && t<w.pauseStart+w.pauseDuration;
+      if(w.pauseStart>=0 && !paused) w.pauseStart=-1;
+
+      if(!paused){
+        let distance = seg.type==='bridge' ? seg.length : seg.p1.distanceTo(seg.p2);
+        distance = Math.max(0.001, distance);
+        w.routeProgress += w.speed * 0.018;
+        const f = Math.min(1, w.routeProgress / distance);
+        let dx=0, dz=0;
+
+        if (seg.type === 'line') {
+            if(w.cloudStep) w.cloudStep.visible = false;
+            w.model.position.lerpVectors(seg.p1, seg.p2, f);
+            w.model.position.y = w.baseY + (isChief ? 0 : Math.abs(Math.sin(t*8.5+w.offset))*.012);
+            dx = seg.p2.x - seg.p1.x;
+            dz = seg.p2.z - seg.p1.z;
+        } else if (seg.type === 'bridge') {
+            if(w.cloudStep) w.cloudStep.visible = true;
+            const u = seg.dir === 1 ? f : 1 - f;
+            const pos = seg.curve.getPointAt(u);
+            const tangent = seg.curve.getTangentAt(u).multiplyScalar(seg.dir);
+            
+            w.model.position.copy(pos);
+            // 人物完美立於橋面弧線之上
+            w.model.position.y = pos.y + 0.28 + Math.abs(Math.sin(t*8.5+w.offset))*.012;
+            
+            if(w.cloudStep){
+                // 個人專屬踏雲緊跟人物正下方，切齊橋樑角度
+                w.cloudStep.position.set(pos.x, pos.y + 0.12, pos.z);
+                w.cloudStep.rotation.y = Math.atan2(tangent.x, tangent.z);
+                w.cloudStep.rotation.x = -Math.atan2(tangent.y, Math.sqrt(tangent.x*tangent.x + tangent.z*tangent.z));
+            }
+            
+            dx = tangent.x;
+            dz = tangent.z;
+        }
+
+        if(Math.hypot(dx,dz)>0.01){
+            w.model.rotation.y = Math.atan2(dx, dz);
+        }
+
+        if (f >= 1) {
+            w.routeIndex++;
+            w.routeProgress = 0;
+            if (w.routeIndex >= w.routeSegments.length) {
+                if (w.task) {
+                    showToast('工程師已抵達工作現場');
+                    w.routeSegments = null;
+                    w.task = null;
+                    w.taskSprite.visible = false;
+                    startPatrol(w);
+                } else {
+                    w.routeSegments = null;
+                }
+            }
+        }
+      } else {
+        w.model.position.y = w.baseY;
+        const q=Math.min(1,(t-w.pauseStart)/Math.max(.01,w.pauseDuration));
+        const turn=Math.sin(q*Math.PI)*w.pauseTurn;
+        w.model.rotation.y=w.pauseFacing+turn;
+      }
+
+      const parts=w.model.userData.walkParts;const walking=!paused;const step=walking?Math.sin(t*8.5+w.offset)*.48:Math.sin(t*1.6+w.offset)*.025;
+      if(w.model.userData.isChief){parts.legs[0].rotation.x=-.12;parts.legs[1].rotation.x=-.12;}else{parts.legs[0].rotation.x=step;parts.legs[1].rotation.x=-step;parts.arms[0].rotation.x=-step*.72;parts.arms[1].rotation.x=step*.72;}
+      w.model.rotation.z=paused?Math.sin(t*4+w.offset)*.025:Math.sin(t*1.8+w.offset)*.008;
+      w.taskSprite.position.y=1.65+Math.sin(t*3+w.offset)*.04;
+    }
+  });
+  clouds.children.forEach((m,i)=>{m.position.x+=Math.sin(t*.12+i)*.0008});controls.update();renderer.render(scene,camera)}animate();
+</script>
+</body></html>
